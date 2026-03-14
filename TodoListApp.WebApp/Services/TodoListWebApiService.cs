@@ -28,9 +28,14 @@ public class TodoListWebApiService : ITodoListWebApiService
         ArgumentNullException.ThrowIfNull(configuration);
 
         this.httpClient = httpClient;
-        var baseUrl = configuration["WebApi:BaseUrl"] ?? "https://localhost:7001";
+        var baseUrl = configuration["WebApi:BaseUrl"];
+        if (string.IsNullOrEmpty(baseUrl))
+        {
+            throw new InvalidOperationException("WebApi:BaseUrl is not configured in appsettings.json.");
+        }
+
+        this.httpClient.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
         var apiKey = configuration["WebApi:ApiKey"] ?? string.Empty;
-        this.httpClient.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
         this.httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
     }
 
@@ -61,7 +66,13 @@ public class TodoListWebApiService : ITodoListWebApiService
     }
 
     /// <inheritdoc />
-    public async Task CreateAsync(TodoListWebApiModel model)
+    public Task CreateAsync(TodoListWebApiModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+        return this.CreateCoreAsync(model);
+    }
+
+    private async Task CreateCoreAsync(TodoListWebApiModel model)
     {
         var response = await SendAsync(() => this.httpClient.PostAsJsonAsync("api/todolist", model, JsonOptions));
         response.EnsureSuccessStatusCode();
