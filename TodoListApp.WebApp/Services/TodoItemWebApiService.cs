@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using System.Net.Sockets;
 using System.Text.Json;
 using TodoListApp.WebApp.Exceptions;
 using TodoListApp.WebApp.Models;
@@ -46,7 +45,7 @@ public class TodoItemWebApiService : ITodoItemWebApiService
             this.httpClient.BaseAddress!,
             $"api/todoitem?listId={listId}&page={page}&pageSize={pageSize}");
         var response = await SendAsync(() => this.httpClient.GetAsync(uri));
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<TodoItemWebApiModel>>(JsonOptions);
         return result ?? Enumerable.Empty<TodoItemWebApiModel>();
     }
@@ -61,7 +60,7 @@ public class TodoItemWebApiService : ITodoItemWebApiService
             return null;
         }
 
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         return await response.Content.ReadFromJsonAsync<TodoItemWebApiModel>(JsonOptions);
     }
 
@@ -72,7 +71,7 @@ public class TodoItemWebApiService : ITodoItemWebApiService
             this.httpClient.BaseAddress!,
             $"api/todoitem/assigned?userId={Uri.EscapeDataString(userId)}");
         var response = await SendAsync(() => this.httpClient.GetAsync(uri));
-        response.EnsureSuccessStatusCode();
+        _ = response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<TodoItemWebApiModel>>(JsonOptions);
         return result ?? Enumerable.Empty<TodoItemWebApiModel>();
     }
@@ -84,27 +83,17 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         return this.CreateCoreAsync(model);
     }
 
-    private async Task CreateCoreAsync(TodoItemWebApiModel model)
-    {
-        var response = await SendAsync(() => this.httpClient.PostAsJsonAsync("api/todoitem", model, JsonOptions));
-        response.EnsureSuccessStatusCode();
-    }
-
     /// <inheritdoc />
-    public async Task UpdateAsync(TodoItemWebApiModel model)
+    public Task UpdateAsync(TodoItemWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        var response = await SendAsync(() => this.httpClient.PutAsJsonAsync($"api/todoitem/{model.Id}", model, JsonOptions));
-        response.EnsureSuccessStatusCode();
+        return this.UpdateCoreAsync(model);
     }
 
     /// <inheritdoc />
-    public async Task DeleteAsync(int id)
+    public Task DeleteAsync(int id)
     {
-        var uri = new Uri(this.httpClient.BaseAddress!, $"api/todoitem/{id}");
-        var response = await SendAsync(() => this.httpClient.DeleteAsync(uri));
-        response.EnsureSuccessStatusCode();
+        return this.DeleteCoreAsync(id);
     }
 
     private static async Task<HttpResponseMessage> SendAsync(Func<Task<HttpResponseMessage>> send)
@@ -117,9 +106,28 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         {
             throw new ApiUnavailableException("The Todo List API is not running or not reachable. Please start the WebApi project (TodoListApp.WebApi).", ex);
         }
-        catch (SocketException ex)
+        catch (System.Net.Sockets.SocketException ex)
         {
             throw new ApiUnavailableException("The Todo List API is not running or not reachable. Please start the WebApi project (TodoListApp.WebApi).", ex);
         }
+    }
+
+    private async Task CreateCoreAsync(TodoItemWebApiModel model)
+    {
+        var response = await SendAsync(() => this.httpClient.PostAsJsonAsync("api/todoitem", model, JsonOptions));
+        _ = response.EnsureSuccessStatusCode();
+    }
+
+    private async Task UpdateCoreAsync(TodoItemWebApiModel model)
+    {
+        var response = await SendAsync(() => this.httpClient.PutAsJsonAsync($"api/todoitem/{model.Id}", model, JsonOptions));
+        _ = response.EnsureSuccessStatusCode();
+    }
+
+    private async Task DeleteCoreAsync(int id)
+    {
+        var uri = new Uri(this.httpClient.BaseAddress!, $"api/todoitem/{id}");
+        var response = await SendAsync(() => this.httpClient.DeleteAsync(uri));
+        _ = response.EnsureSuccessStatusCode();
     }
 }

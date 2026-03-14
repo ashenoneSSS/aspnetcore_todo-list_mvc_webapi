@@ -10,21 +10,21 @@
     <input type="hidden" asp-for="TodoListId" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="mb-3">
-        <label asp-for="Title" class="form-label" for="@Html.IdFor(m => m.Title)"></label>
-        <input asp-for="Title" class="form-control" />
+        <label asp-for="Title" class="form-label" for="@Html.IdFor(m => m.Title)">Title</label>
+        <input asp-for="Title" class="form-control" id="@Html.IdFor(m => m.Title)" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Description" class="form-label" for="@Html.IdFor(m => m.Description)"></label>
-        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <label asp-for="Description" class="form-label" for="@Html.IdFor(m => m.Description)">Description</label>
+        <textarea asp-for="Description" id="@Html.IdFor(m => m.Description)" class="form-control" rows="3"></textarea>
     </div>
     <div class="mb-3">
-        <label asp-for="DueDate" class="form-label" for="@Html.IdFor(m => m.DueDate)"></label>
-        <input asp-for="DueDate" type="date" class="form-control" />
+        <label asp-for="DueDate" class="form-label" for="@Html.IdFor(m => m.DueDate)">Due Date</label>
+        <input asp-for="DueDate" id="@Html.IdFor(m => m.DueDate)" type="date" class="form-control" />
     </div>
     <div class="mb-3">
-        <label asp-for="Status" class="form-label" for="@Html.IdFor(m => m.Status)"></label>
-        <select asp-for="Status" class="form-select">
+        <label asp-for="Status" class="form-label" for="@Html.IdFor(m => m.Status)">Status</label>
+        <select asp-for="Status" id="@Html.IdFor(m => m.Status)" class="form-select">
             <option value="0">Not Started</option>
             <option value="1">In Progress</option>
             <option value="2">Completed</option>
