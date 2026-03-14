@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using TodoListApp.WebApi.Exceptions;
 using TodoListApp.WebApi.Models;
 using TodoListApp.WebApi.Services;
@@ -12,7 +13,7 @@ namespace TodoListApp.WebApi.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class TodoItemController : ControllerBase
+public partial class TodoItemController : ControllerBase
 {
     private readonly ITodoItemDatabaseService service;
     private readonly ILogger<TodoItemController> logger;
@@ -81,7 +82,7 @@ public class TodoItemController : ControllerBase
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, "Error getting todo item {Id}", id);
+            LogErrorGettingItem(this.logger, id, ex);
             return this.StatusCode(500);
         }
     }
@@ -95,26 +96,10 @@ public class TodoItemController : ControllerBase
     [ProducesResponseType(typeof(TodoItemModel), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<TodoItemModel>> Create([FromBody] TodoItemModel model)
+    public Task<ActionResult<TodoItemModel>> Create([FromBody] TodoItemModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        try
-        {
-            model.CreatedDate = DateTime.UtcNow;
-            var created = await this.service.CreateAsync(model);
-            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
-        }
-        catch (NotFoundException ex)
-        {
-            this.logger.LogWarning(ex, "Not found during create");
-            return this.NotFound();
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "Error creating todo item");
-            return this.StatusCode(500);
-        }
+        return this.CreateCoreAsync(model);
     }
 
     /// <summary>
@@ -127,25 +112,10 @@ public class TodoItemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Update(int id, [FromBody] TodoItemModel model)
+    public Task<IActionResult> Update(int id, [FromBody] TodoItemModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        try
-        {
-            model.Id = id;
-            await this.service.UpdateAsync(model);
-            return this.NoContent();
-        }
-        catch (NotFoundException)
-        {
-            return this.NotFound();
-        }
-        catch (Exception ex)
-        {
-            this.logger.LogError(ex, "Error updating todo item {Id}", id);
-            return this.StatusCode(500);
-        }
+        return this.UpdateCoreAsync(id, model);
     }
 
     /// <summary>
@@ -170,7 +140,61 @@ public class TodoItemController : ControllerBase
         }
         catch (Exception ex)
         {
-            this.logger.LogError(ex, "Error deleting todo item {Id}", id);
+            LogErrorDeletingItem(this.logger, id, ex);
+            return this.StatusCode(500);
+        }
+    }
+
+    [LoggerMessage(LogLevel.Error, "Error getting todo item {Id}")]
+    private static partial void LogErrorGettingItem(ILogger logger, int id, Exception ex);
+
+    [LoggerMessage(LogLevel.Warning, "Not found during create")]
+    private static partial void LogWarningNotFoundCreate(ILogger logger, Exception ex);
+
+    [LoggerMessage(LogLevel.Error, "Error creating todo item")]
+    private static partial void LogErrorCreatingItem(ILogger logger, Exception ex);
+
+    [LoggerMessage(LogLevel.Error, "Error updating todo item {Id}")]
+    private static partial void LogErrorUpdatingItem(ILogger logger, int id, Exception ex);
+
+    [LoggerMessage(LogLevel.Error, "Error deleting todo item {Id}")]
+    private static partial void LogErrorDeletingItem(ILogger logger, int id, Exception ex);
+
+    private async Task<ActionResult<TodoItemModel>> CreateCoreAsync(TodoItemModel model)
+    {
+        try
+        {
+            model.CreatedDate = DateTime.UtcNow;
+            var created = await this.service.CreateAsync(model);
+            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
+        }
+        catch (NotFoundException ex)
+        {
+            LogWarningNotFoundCreate(this.logger, ex);
+            return this.NotFound();
+        }
+        catch (Exception ex)
+        {
+            LogErrorCreatingItem(this.logger, ex);
+            return this.StatusCode(500);
+        }
+    }
+
+    private async Task<IActionResult> UpdateCoreAsync(int id, TodoItemModel model)
+    {
+        try
+        {
+            model.Id = id;
+            await this.service.UpdateAsync(model);
+            return this.NoContent();
+        }
+        catch (NotFoundException)
+        {
+            return this.NotFound();
+        }
+        catch (Exception ex)
+        {
+            LogErrorUpdatingItem(this.logger, id, ex);
             return this.StatusCode(500);
         }
     }

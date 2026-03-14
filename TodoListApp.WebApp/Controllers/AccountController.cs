@@ -43,10 +43,49 @@ public class AccountController : Controller
     /// <returns>Redirect to TodoList/Index on success, or view with errors.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterViewModel model)
+    public Task<IActionResult> Register(RegisterViewModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
+        return this.RegisterCoreAsync(model);
+    }
 
+    /// <summary>
+    /// Displays the login form.
+    /// </summary>
+    /// <returns>The login view.</returns>
+    [HttpGet]
+    public IActionResult Login()
+    {
+        return this.View(new LoginViewModel());
+    }
+
+    /// <summary>
+    /// Handles login form submission.
+    /// </summary>
+    /// <param name="model">The login view model.</param>
+    /// <returns>Redirect to TodoList/Index on success, or view with errors.</returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public Task<IActionResult> Login(LoginViewModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+        return this.LoginCoreAsync(model);
+    }
+
+    /// <summary>
+    /// Signs out the current user.
+    /// </summary>
+    /// <returns>Redirect to Login.</returns>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Logout()
+    {
+        await this.signInManager.SignOutAsync();
+        return this.RedirectToAction("Login");
+    }
+
+    private async Task<IActionResult> RegisterCoreAsync(RegisterViewModel model)
+    {
         if (this.ModelState.IsValid)
         {
             var user = new ApplicationUser
@@ -71,27 +110,8 @@ public class AccountController : Controller
         return this.View(model);
     }
 
-    /// <summary>
-    /// Displays the login form.
-    /// </summary>
-    /// <returns>The login view.</returns>
-    [HttpGet]
-    public IActionResult Login()
+    private async Task<IActionResult> LoginCoreAsync(LoginViewModel model)
     {
-        return this.View(new LoginViewModel());
-    }
-
-    /// <summary>
-    /// Handles login form submission.
-    /// </summary>
-    /// <param name="model">The login view model.</param>
-    /// <returns>Redirect to TodoList/Index on success, or view with errors.</returns>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-        ArgumentNullException.ThrowIfNull(model);
-
         if (this.ModelState.IsValid)
         {
             var result = await this.signInManager.PasswordSignInAsync(
@@ -109,17 +129,5 @@ public class AccountController : Controller
         }
 
         return this.View(model);
-    }
-
-    /// <summary>
-    /// Signs out the current user.
-    /// </summary>
-    /// <returns>Redirect to Login.</returns>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
-    {
-        await this.signInManager.SignOutAsync();
-        return this.RedirectToAction("Login");
     }
 }

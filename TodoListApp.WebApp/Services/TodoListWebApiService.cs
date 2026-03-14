@@ -40,7 +40,7 @@ public class TodoListWebApiService : ITodoListWebApiService
         var uri = new Uri(
             this.httpClient.BaseAddress!,
             $"api/todolist?userId={Uri.EscapeDataString(userId)}");
-        var response = await this.SendAsync(() => this.httpClient.GetAsync(uri));
+        var response = await SendAsync(() => this.httpClient.GetAsync(uri));
         response.EnsureSuccessStatusCode();
         var result = await response.Content.ReadFromJsonAsync<IEnumerable<TodoListWebApiModel>>(JsonOptions);
         return result ?? Enumerable.Empty<TodoListWebApiModel>();
@@ -50,7 +50,7 @@ public class TodoListWebApiService : ITodoListWebApiService
     public async Task<TodoListWebApiModel?> GetByIdAsync(int id)
     {
         var uri = new Uri(this.httpClient.BaseAddress!, $"api/todolist/{id}");
-        var response = await this.SendAsync(() => this.httpClient.GetAsync(uri));
+        var response = await SendAsync(() => this.httpClient.GetAsync(uri));
         if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
@@ -63,7 +63,7 @@ public class TodoListWebApiService : ITodoListWebApiService
     /// <inheritdoc />
     public async Task CreateAsync(TodoListWebApiModel model)
     {
-        var response = await this.SendAsync(() => this.httpClient.PostAsJsonAsync("api/todolist", model, JsonOptions));
+        var response = await SendAsync(() => this.httpClient.PostAsJsonAsync("api/todolist", model, JsonOptions));
         response.EnsureSuccessStatusCode();
     }
 
@@ -72,7 +72,7 @@ public class TodoListWebApiService : ITodoListWebApiService
     {
         ArgumentNullException.ThrowIfNull(model);
 
-        var response = await this.SendAsync(() => this.httpClient.PutAsJsonAsync($"api/todolist/{model.Id}", model, JsonOptions));
+        var response = await SendAsync(() => this.httpClient.PutAsJsonAsync($"api/todolist/{model.Id}", model, JsonOptions));
         response.EnsureSuccessStatusCode();
     }
 
@@ -80,11 +80,11 @@ public class TodoListWebApiService : ITodoListWebApiService
     public async Task DeleteAsync(int id)
     {
         var uri = new Uri(this.httpClient.BaseAddress!, $"api/todolist/{id}");
-        var response = await this.SendAsync(() => this.httpClient.DeleteAsync(uri));
+        var response = await SendAsync(() => this.httpClient.DeleteAsync(uri));
         response.EnsureSuccessStatusCode();
     }
 
-    private async Task<HttpResponseMessage> SendAsync(Func<Task<HttpResponseMessage>> send)
+    private static async Task<HttpResponseMessage> SendAsync(Func<Task<HttpResponseMessage>> send)
     {
         try
         {

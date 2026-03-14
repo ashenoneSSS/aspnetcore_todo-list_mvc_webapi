@@ -57,42 +57,17 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     }
 
     /// <inheritdoc />
-    public async Task<TodoItemModel> CreateAsync(TodoItemModel model)
+    public Task<TodoItemModel> CreateAsync(TodoItemModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        var entity = new TodoItemEntity
-        {
-            Title = model.Title,
-            Description = model.Description,
-            CreatedDate = model.CreatedDate,
-            DueDate = model.DueDate,
-            Status = model.Status,
-            AssigneeId = model.AssigneeId,
-            TodoListId = model.TodoListId,
-        };
-
-        this.context.TodoItems.Add(entity);
-        await this.context.SaveChangesAsync();
-
-        return MapToModel(entity);
+        return this.CreateCoreAsync(model);
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(TodoItemModel model)
+    public Task UpdateAsync(TodoItemModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        var entity = await this.context.TodoItems.FindAsync(model.Id)
-            ?? throw new NotFoundException($"Todo item with id {model.Id} not found.");
-
-        entity.Title = model.Title;
-        entity.Description = model.Description;
-        entity.DueDate = model.DueDate;
-        entity.Status = model.Status;
-        entity.AssigneeId = model.AssigneeId;
-
-        await this.context.SaveChangesAsync();
+        return this.UpdateCoreAsync(model);
     }
 
     /// <inheritdoc />
@@ -118,5 +93,38 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
             AssigneeId = entity.AssigneeId,
             TodoListId = entity.TodoListId,
         };
+    }
+
+    private async Task<TodoItemModel> CreateCoreAsync(TodoItemModel model)
+    {
+        var entity = new TodoItemEntity
+        {
+            Title = model.Title,
+            Description = model.Description,
+            CreatedDate = model.CreatedDate,
+            DueDate = model.DueDate,
+            Status = model.Status,
+            AssigneeId = model.AssigneeId,
+            TodoListId = model.TodoListId,
+        };
+
+        this.context.TodoItems.Add(entity);
+        await this.context.SaveChangesAsync();
+
+        return MapToModel(entity);
+    }
+
+    private async Task UpdateCoreAsync(TodoItemModel model)
+    {
+        var entity = await this.context.TodoItems.FindAsync(model.Id)
+            ?? throw new NotFoundException($"Todo item with id {model.Id} not found.");
+
+        entity.Title = model.Title;
+        entity.Description = model.Description;
+        entity.DueDate = model.DueDate;
+        entity.Status = model.Status;
+        entity.AssigneeId = model.AssigneeId;
+
+        await this.context.SaveChangesAsync();
     }
 }

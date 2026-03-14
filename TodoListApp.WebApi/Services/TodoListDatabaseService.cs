@@ -41,36 +41,17 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     }
 
     /// <inheritdoc />
-    public async Task<TodoListModel> CreateAsync(TodoListModel model)
+    public Task<TodoListModel> CreateAsync(TodoListModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        var entity = new TodoListEntity
-        {
-            Title = model.Title,
-            Description = model.Description,
-            UserId = model.UserId,
-            CreatedDate = model.CreatedDate,
-        };
-
-        this.context.TodoLists.Add(entity);
-        await this.context.SaveChangesAsync();
-
-        return MapToModel(entity);
+        return this.CreateCoreAsync(model);
     }
 
     /// <inheritdoc />
-    public async Task UpdateAsync(TodoListModel model)
+    public Task UpdateAsync(TodoListModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
-
-        var entity = await this.context.TodoLists.FindAsync(model.Id)
-            ?? throw new NotFoundException($"Todo list with id {model.Id} not found.");
-
-        entity.Title = model.Title;
-        entity.Description = model.Description;
-
-        await this.context.SaveChangesAsync();
+        return this.UpdateCoreAsync(model);
     }
 
     /// <inheritdoc />
@@ -93,5 +74,32 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             UserId = entity.UserId,
             CreatedDate = entity.CreatedDate,
         };
+    }
+
+    private async Task<TodoListModel> CreateCoreAsync(TodoListModel model)
+    {
+        var entity = new TodoListEntity
+        {
+            Title = model.Title,
+            Description = model.Description,
+            UserId = model.UserId,
+            CreatedDate = model.CreatedDate,
+        };
+
+        this.context.TodoLists.Add(entity);
+        await this.context.SaveChangesAsync();
+
+        return MapToModel(entity);
+    }
+
+    private async Task UpdateCoreAsync(TodoListModel model)
+    {
+        var entity = await this.context.TodoLists.FindAsync(model.Id)
+            ?? throw new NotFoundException($"Todo list with id {model.Id} not found.");
+
+        entity.Title = model.Title;
+        entity.Description = model.Description;
+
+        await this.context.SaveChangesAsync();
     }
 }

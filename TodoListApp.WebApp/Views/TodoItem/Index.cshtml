@@ -26,12 +26,7 @@
             <tr class="@(item.IsOverdue ? "table-danger" : "")">
                 <td>@item.Title</td>
                 <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
-                <td>
-                    @{
-                        var statusText = item.Status == 0 ? "Not Started" : (item.Status == 1 ? "In Progress" : "Completed");
-                    }
-                    @statusText
-                </td>
+                <td>@(item.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>

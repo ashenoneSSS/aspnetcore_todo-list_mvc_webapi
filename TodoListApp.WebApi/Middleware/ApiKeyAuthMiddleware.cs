@@ -25,11 +25,22 @@ public class ApiKeyAuthMiddleware
     /// </summary>
     /// <param name="context">The HTTP context.</param>
     /// <param name="configuration">The configuration.</param>
-    public async Task InvokeAsync(HttpContext context, IConfiguration configuration)
+    public Task InvokeAsync(HttpContext context, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(configuration);
+        return this.InvokeCoreAsync(context, configuration);
+    }
 
+    private static bool ShouldSkipAuth(HttpContext context)
+    {
+        var path = context.Request.Path.Value ?? string.Empty;
+        return path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase) ||
+               path.StartsWith("/health", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private async Task InvokeCoreAsync(HttpContext context, IConfiguration configuration)
+    {
         if (ShouldSkipAuth(context))
         {
             await this.next(context);
@@ -54,12 +65,5 @@ public class ApiKeyAuthMiddleware
         }
 
         context.Response.StatusCode = 401;
-    }
-
-    private static bool ShouldSkipAuth(HttpContext context)
-    {
-        var path = context.Request.Path.Value ?? string.Empty;
-        return path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase) ||
-               path.StartsWith("/health", StringComparison.OrdinalIgnoreCase);
     }
 }

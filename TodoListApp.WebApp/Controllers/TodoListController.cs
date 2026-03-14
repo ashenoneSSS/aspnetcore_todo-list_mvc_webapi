@@ -49,10 +49,49 @@ public class TodoListController : Controller
     /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(TodoListWebApiModel model)
+    public Task<IActionResult> Create(TodoListWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
+        return this.CreateCoreAsync(model);
+    }
 
+    /// <summary>
+    /// Displays the edit form.
+    /// </summary>
+    [HttpGet]
+    public Task<IActionResult> Edit(int id) => this.ShowListViewAsync(id, "Edit");
+
+    /// <summary>
+    /// Handles edit form submission.
+    /// </summary>
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public Task<IActionResult> Edit(int id, TodoListWebApiModel model)
+    {
+        ArgumentNullException.ThrowIfNull(model);
+        return this.EditCoreAsync(id, model);
+    }
+
+    /// <summary>
+    /// Displays the delete confirmation page.
+    /// </summary>
+    [HttpGet]
+    public Task<IActionResult> Delete(int id) => this.ShowListViewAsync(id, "Delete");
+
+    /// <summary>
+    /// Handles delete confirmation.
+    /// </summary>
+    [HttpPost]
+    [ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await this.todoListService.DeleteAsync(id);
+        return this.RedirectToAction(nameof(this.Index));
+    }
+
+    private async Task<IActionResult> CreateCoreAsync(TodoListWebApiModel model)
+    {
         if (this.ModelState.IsValid)
         {
             model.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
@@ -63,30 +102,8 @@ public class TodoListController : Controller
         return this.View(model);
     }
 
-    /// <summary>
-    /// Displays the edit form.
-    /// </summary>
-    [HttpGet]
-    public async Task<IActionResult> Edit(int id)
+    private async Task<IActionResult> EditCoreAsync(int id, TodoListWebApiModel model)
     {
-        var list = await this.todoListService.GetByIdAsync(id);
-        if (list == null)
-        {
-            return this.NotFound();
-        }
-
-        return this.View(list);
-    }
-
-    /// <summary>
-    /// Handles edit form submission.
-    /// </summary>
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, TodoListWebApiModel model)
-    {
-        ArgumentNullException.ThrowIfNull(model);
-
         if (id != model.Id)
         {
             return this.BadRequest();
@@ -101,11 +118,7 @@ public class TodoListController : Controller
         return this.View(model);
     }
 
-    /// <summary>
-    /// Displays the delete confirmation page.
-    /// </summary>
-    [HttpGet]
-    public async Task<IActionResult> Delete(int id)
+    private async Task<IActionResult> ShowListViewAsync(int id, string viewName)
     {
         var list = await this.todoListService.GetByIdAsync(id);
         if (list == null)
@@ -113,18 +126,6 @@ public class TodoListController : Controller
             return this.NotFound();
         }
 
-        return this.View(list);
-    }
-
-    /// <summary>
-    /// Handles delete confirmation.
-    /// </summary>
-    [HttpPost]
-    [ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        await this.todoListService.DeleteAsync(id);
-        return this.RedirectToAction(nameof(this.Index));
+        return this.View(viewName, list);
     }
 }

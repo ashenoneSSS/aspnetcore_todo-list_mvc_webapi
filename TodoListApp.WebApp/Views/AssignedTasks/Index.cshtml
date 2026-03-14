@@ -39,12 +39,7 @@
             <tr class="@(item.IsOverdue ? "table-danger" : "")">
                 <td>@item.Title</td>
                 <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
-                <td>
-                    @{
-                        var statusText = item.Status == 0 ? "Not Started" : (item.Status == 1 ? "In Progress" : "Completed");
-                    }
-                    @statusText
-                </td>
+                <td>@(item.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</td>
                 <td>
                     <form asp-action="ChangeStatus" method="post" class="d-inline">
                         @Html.AntiForgeryToken()
