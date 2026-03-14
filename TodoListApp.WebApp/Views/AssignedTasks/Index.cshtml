@@ -10,8 +10,8 @@
 <div class="row mb-3">
     <div class="col-md-6">
         <form method="get" class="d-inline-flex gap-2">
-            <label class="col-form-label">Filter by status:</label>
-            <select name="statusFilter" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+            <label for="statusFilter" class="col-form-label">Filter by status:</label>
+            <select id="statusFilter" name="statusFilter" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
                 <option value="active" selected="@(statusFilter == "active")">Active only</option>
                 <option value="" selected="@(statusFilter == "")">All</option>
                 <option value="0" selected="@(statusFilter == "0")">Not Started</option>
@@ -39,7 +39,12 @@
             <tr class="@(item.IsOverdue ? "table-danger" : "")">
                 <td>@item.Title</td>
                 <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
-                <td>@(item.Status == 0 ? "Not Started" : item.Status == 1 ? "In Progress" : "Completed")</td>
+                <td>
+                    @{
+                        var statusText = item.Status == 0 ? "Not Started" : (item.Status == 1 ? "In Progress" : "Completed");
+                    }
+                    @statusText
+                </td>
                 <td>
                     <form asp-action="ChangeStatus" method="post" class="d-inline">
                         @Html.AntiForgeryToken()

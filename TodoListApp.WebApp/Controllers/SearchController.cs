@@ -13,8 +13,9 @@ public class SearchController : Controller
     /// Displays the search page.
     /// </summary>
     /// <returns>The search view.</returns>
+    [HttpGet]
     public IActionResult Index()
     {
-        return View();
+        return this.View();
     }
 }

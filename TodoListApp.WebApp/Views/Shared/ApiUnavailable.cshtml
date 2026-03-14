@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "API Unavailable";
+    var message = ViewData["Message"] as string ?? "The Todo List API is not running or not reachable.";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+        <div class="alert alert-warning" role="alert">
+            <h2 class="alert-heading">Backend API is not available</h2>
+            <p class="mb-0">@message</p>
+        </div>
+        <p>
+            This application (WebApp) needs the <strong>TodoListApp.WebApi</strong> project to be running to load and save todo lists and tasks.
+        </p>
+        <p>
+            <strong>What to do:</strong>
+        </p>
+        <ol>
+            <li>In Visual Studio or your IDE, set <strong>TodoListApp.WebApi</strong> as a startup project, or</li>
+            <li>Open a second terminal and run: <code>dotnet run --project TodoListApp.WebApi</code></li>
+        </ol>
+        <p>
+            The API usually runs at <strong>https://localhost:7001</strong>. Once it is running, <a href="@Url.Content("~/")">refresh this page</a> or go back to <a asp-controller="TodoList" asp-action="Index">Todo Lists</a>.
+        </p>
+    </div>
+</div>

@@ -10,24 +10,20 @@ namespace TodoListApp.WebApp.Controllers;
 /// </summary>
 public class AccountController : Controller
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly ILogger<AccountController> _logger;
+    private readonly UserManager<ApplicationUser> userManager;
+    private readonly SignInManager<ApplicationUser> signInManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AccountController"/> class.
     /// </summary>
     /// <param name="userManager">The user manager.</param>
     /// <param name="signInManager">The sign-in manager.</param>
-    /// <param name="logger">The logger.</param>
     public AccountController(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        ILogger<AccountController> logger)
+        SignInManager<ApplicationUser> signInManager)
     {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _logger = logger;
+        this.userManager = userManager;
+        this.signInManager = signInManager;
     }
 
     /// <summary>
@@ -37,7 +33,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Register()
     {
-        return View(new RegisterViewModel());
+        return this.View(new RegisterViewModel());
     }
 
     /// <summary>
@@ -49,7 +45,9 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (ModelState.IsValid)
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (this.ModelState.IsValid)
         {
             var user = new ApplicationUser
             {
@@ -57,20 +55,20 @@ public class AccountController : Controller
                 Email = model.Email,
             };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await this.userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "TodoList");
+                await this.signInManager.SignInAsync(user, isPersistent: false);
+                return this.RedirectToAction("Index", "TodoList");
             }
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                this.ModelState.AddModelError(string.Empty, error.Description);
             }
         }
 
-        return View(model);
+        return this.View(model);
     }
 
     /// <summary>
@@ -80,7 +78,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Login()
     {
-        return View(new LoginViewModel());
+        return this.View(new LoginViewModel());
     }
 
     /// <summary>
@@ -92,9 +90,11 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        if (ModelState.IsValid)
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (this.ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(
+            var result = await this.signInManager.PasswordSignInAsync(
                 model.Email,
                 model.Password,
                 model.RememberMe,
@@ -102,13 +102,13 @@ public class AccountController : Controller
 
             if (result.Succeeded)
             {
-                return RedirectToAction("Index", "TodoList");
+                return this.RedirectToAction("Index", "TodoList");
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            this.ModelState.AddModelError(string.Empty, "Invalid login attempt.");
         }
 
-        return View(model);
+        return this.View(model);
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
-        await _signInManager.SignOutAsync();
-        return RedirectToAction("Login");
+        await this.signInManager.SignOutAsync();
+        return this.RedirectToAction("Login");
     }
 }

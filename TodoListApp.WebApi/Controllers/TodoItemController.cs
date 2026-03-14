@@ -14,8 +14,8 @@ namespace TodoListApp.WebApi.Controllers;
 [Authorize]
 public class TodoItemController : ControllerBase
 {
-    private readonly ITodoItemDatabaseService _service;
-    private readonly ILogger<TodoItemController> _logger;
+    private readonly ITodoItemDatabaseService service;
+    private readonly ILogger<TodoItemController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoItemController"/> class.
@@ -24,8 +24,8 @@ public class TodoItemController : ControllerBase
     /// <param name="logger">The logger.</param>
     public TodoItemController(ITodoItemDatabaseService service, ILogger<TodoItemController> logger)
     {
-        _service = service;
-        _logger = logger;
+        this.service = service;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -42,8 +42,8 @@ public class TodoItemController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
-        var items = await _service.GetByListIdAsync(listId, page, pageSize);
-        return Ok(items);
+        var items = await this.service.GetByListIdAsync(listId, page, pageSize);
+        return this.Ok(items);
     }
 
     /// <summary>
@@ -55,8 +55,8 @@ public class TodoItemController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<TodoItemModel>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<TodoItemModel>>> GetAssigned([FromQuery] string userId)
     {
-        var items = await _service.GetAssignedToUserAsync(userId);
-        return Ok(items);
+        var items = await this.service.GetAssignedToUserAsync(userId);
+        return this.Ok(items);
     }
 
     /// <summary>
@@ -71,18 +71,18 @@ public class TodoItemController : ControllerBase
     {
         try
         {
-            var item = await _service.GetByIdAsync(id);
+            var item = await this.service.GetByIdAsync(id);
             if (item == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return Ok(item);
+            return this.Ok(item);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting todo item {Id}", id);
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error getting todo item {Id}", id);
+            return this.StatusCode(500);
         }
     }
 
@@ -97,21 +97,23 @@ public class TodoItemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TodoItemModel>> Create([FromBody] TodoItemModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         try
         {
             model.CreatedDate = DateTime.UtcNow;
-            var created = await _service.CreateAsync(model);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var created = await this.service.CreateAsync(model);
+            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
         }
         catch (NotFoundException ex)
         {
-            _logger.LogWarning(ex, "Not found during create");
-            return NotFound();
+            this.logger.LogWarning(ex, "Not found during create");
+            return this.NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating todo item");
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error creating todo item");
+            return this.StatusCode(500);
         }
     }
 
@@ -127,20 +129,22 @@ public class TodoItemController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(int id, [FromBody] TodoItemModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         try
         {
             model.Id = id;
-            await _service.UpdateAsync(model);
-            return NoContent();
+            await this.service.UpdateAsync(model);
+            return this.NoContent();
         }
         catch (NotFoundException)
         {
-            return NotFound();
+            return this.NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating todo item {Id}", id);
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error updating todo item {Id}", id);
+            return this.StatusCode(500);
         }
     }
 
@@ -157,17 +161,17 @@ public class TodoItemController : ControllerBase
     {
         try
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            await this.service.DeleteAsync(id);
+            return this.NoContent();
         }
         catch (NotFoundException)
         {
-            return NotFound();
+            return this.NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting todo item {Id}", id);
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error deleting todo item {Id}", id);
+            return this.StatusCode(500);
         }
     }
 }

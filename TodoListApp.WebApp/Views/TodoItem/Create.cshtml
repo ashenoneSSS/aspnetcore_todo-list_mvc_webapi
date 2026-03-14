@@ -10,21 +10,21 @@
     <input type="hidden" asp-for="TodoListId" />
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="mb-3">
-        <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
+        <label asp-for="Title" class="form-label" for="Title"></label>
+        <input asp-for="Title" class="form-control" id="Title" />
         <span asp-validation-for="Title" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Description" class="form-label"></label>
-        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        <label asp-for="Description" class="form-label" for="Description"></label>
+        <textarea asp-for="Description" class="form-control" rows="3" id="Description"></textarea>
     </div>
     <div class="mb-3">
-        <label asp-for="DueDate" class="form-label"></label>
-        <input asp-for="DueDate" type="date" class="form-control" />
+        <label asp-for="DueDate" class="form-label" for="DueDate"></label>
+        <input asp-for="DueDate" type="date" class="form-control" id="DueDate" />
     </div>
     <div class="mb-3">
-        <label asp-for="Status" class="form-label"></label>
-        <select asp-for="Status" class="form-select">
+        <label asp-for="Status" class="form-label" for="Status"></label>
+        <select asp-for="Status" class="form-select" id="Status">
             <option value="0">Not Started</option>
             <option value="1">In Progress</option>
             <option value="2">Completed</option>

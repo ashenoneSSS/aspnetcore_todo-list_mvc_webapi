@@ -1,12 +1,7 @@
 # To-do List Application
 
 In this project, you must design and develop a web application according to the requirements that are specified in the task description.
-  * The application you have to develop must contain two web components - a web and a web API applications.
-  * The web application is a [ASP.NET Core MVC application](https://learn.microsoft.com/en-us/aspnet/core/mvc/overview).
-  * The web API application is a [controller-based ASP.NET Core Web API application](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/apis).
-  * The data store must be a relational database management system such as SQL Server Express.
-  * To access application data the application must use [Entity Framework Core](https://learn.microsoft.com/en-us/ef/core/).
-  * The application must use the [ASP.NET Core Identity API](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity) to manage users, passwords and profile data.
+
 
 
 ## Backlog

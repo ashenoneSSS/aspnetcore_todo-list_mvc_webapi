@@ -31,7 +31,7 @@ public class TodoListEntity
     public string UserId { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the navigation property for the todo items in this list.
+    /// Gets the navigation property for the todo items in this list.
     /// </summary>
-    public ICollection<TodoItemEntity> Items { get; set; } = new List<TodoItemEntity>();
+    public ICollection<TodoItemEntity> Items { get; } = new List<TodoItemEntity>();
 }

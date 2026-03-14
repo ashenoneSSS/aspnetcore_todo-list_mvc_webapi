@@ -51,5 +51,5 @@ public class TodoItemWebApiModel
     /// <summary>
     /// Gets a value indicating whether the task is overdue.
     /// </summary>
-    public bool IsOverdue => DueDate.HasValue && DueDate.Value < DateTime.Now && Status != 2;
+    public bool IsOverdue => this.DueDate.HasValue && this.DueDate.Value < DateTime.Now && this.Status != 2;
 }

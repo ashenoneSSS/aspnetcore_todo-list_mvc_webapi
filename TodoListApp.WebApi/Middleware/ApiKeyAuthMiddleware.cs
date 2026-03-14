@@ -7,9 +7,9 @@ namespace TodoListApp.WebApi.Middleware;
 /// </summary>
 public class ApiKeyAuthMiddleware
 {
-    private readonly RequestDelegate _next;
     private const string AuthorizationHeader = "Authorization";
     private const string BearerPrefix = "Bearer ";
+    private readonly RequestDelegate next;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ApiKeyAuthMiddleware"/> class.
@@ -17,7 +17,7 @@ public class ApiKeyAuthMiddleware
     /// <param name="next">The next middleware in the pipeline.</param>
     public ApiKeyAuthMiddleware(RequestDelegate next)
     {
-        _next = next;
+        this.next = next;
     }
 
     /// <summary>
@@ -27,9 +27,12 @@ public class ApiKeyAuthMiddleware
     /// <param name="configuration">The configuration.</param>
     public async Task InvokeAsync(HttpContext context, IConfiguration configuration)
     {
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(configuration);
+
         if (ShouldSkipAuth(context))
         {
-            await _next(context);
+            await this.next(context);
             return;
         }
 
@@ -45,7 +48,7 @@ public class ApiKeyAuthMiddleware
                 var identity = new ClaimsIdentity("ApiKey");
                 identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, "api-user"));
                 context.User = new ClaimsPrincipal(identity);
-                await _next(context);
+                await this.next(context);
                 return;
             }
         }

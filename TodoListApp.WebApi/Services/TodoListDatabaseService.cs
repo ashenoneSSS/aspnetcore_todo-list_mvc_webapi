@@ -11,7 +11,7 @@ namespace TodoListApp.WebApi.Services;
 /// </summary>
 public class TodoListDatabaseService : ITodoListDatabaseService
 {
-    private readonly TodoListDbContext _context;
+    private readonly TodoListDbContext context;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoListDatabaseService"/> class.
@@ -19,13 +19,13 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     /// <param name="context">The database context.</param>
     public TodoListDatabaseService(TodoListDbContext context)
     {
-        _context = context;
+        this.context = context;
     }
 
     /// <inheritdoc />
     public async Task<IEnumerable<TodoListModel>> GetAllAsync(string userId)
     {
-        var entities = await _context.TodoLists
+        var entities = await this.context.TodoLists
             .Where(l => l.UserId == userId)
             .OrderByDescending(l => l.CreatedDate)
             .ToListAsync();
@@ -36,13 +36,15 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     /// <inheritdoc />
     public async Task<TodoListModel?> GetByIdAsync(int id)
     {
-        var entity = await _context.TodoLists.FindAsync(id);
+        var entity = await this.context.TodoLists.FindAsync(id);
         return entity == null ? null : MapToModel(entity);
     }
 
     /// <inheritdoc />
     public async Task<TodoListModel> CreateAsync(TodoListModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         var entity = new TodoListEntity
         {
             Title = model.Title,
@@ -51,8 +53,8 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             CreatedDate = model.CreatedDate,
         };
 
-        _context.TodoLists.Add(entity);
-        await _context.SaveChangesAsync();
+        this.context.TodoLists.Add(entity);
+        await this.context.SaveChangesAsync();
 
         return MapToModel(entity);
     }
@@ -60,23 +62,25 @@ public class TodoListDatabaseService : ITodoListDatabaseService
     /// <inheritdoc />
     public async Task UpdateAsync(TodoListModel model)
     {
-        var entity = await _context.TodoLists.FindAsync(model.Id)
+        ArgumentNullException.ThrowIfNull(model);
+
+        var entity = await this.context.TodoLists.FindAsync(model.Id)
             ?? throw new NotFoundException($"Todo list with id {model.Id} not found.");
 
         entity.Title = model.Title;
         entity.Description = model.Description;
 
-        await _context.SaveChangesAsync();
+        await this.context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
-        var entity = await _context.TodoLists.FindAsync(id)
+        var entity = await this.context.TodoLists.FindAsync(id)
             ?? throw new NotFoundException($"Todo list with id {id} not found.");
 
-        _context.TodoLists.Remove(entity);
-        await _context.SaveChangesAsync();
+        this.context.TodoLists.Remove(entity);
+        await this.context.SaveChangesAsync();
     }
 
     private static TodoListModel MapToModel(TodoListEntity entity)

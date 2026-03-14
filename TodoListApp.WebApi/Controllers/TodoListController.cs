@@ -14,8 +14,8 @@ namespace TodoListApp.WebApi.Controllers;
 [Authorize]
 public class TodoListController : ControllerBase
 {
-    private readonly ITodoListDatabaseService _service;
-    private readonly ILogger<TodoListController> _logger;
+    private readonly ITodoListDatabaseService service;
+    private readonly ILogger<TodoListController> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoListController"/> class.
@@ -24,8 +24,8 @@ public class TodoListController : ControllerBase
     /// <param name="logger">The logger.</param>
     public TodoListController(ITodoListDatabaseService service, ILogger<TodoListController> logger)
     {
-        _service = service;
-        _logger = logger;
+        this.service = service;
+        this.logger = logger;
     }
 
     /// <summary>
@@ -37,8 +37,8 @@ public class TodoListController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<TodoListModel>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<TodoListModel>>> GetAll([FromQuery] string userId)
     {
-        var lists = await _service.GetAllAsync(userId);
-        return Ok(lists);
+        var lists = await this.service.GetAllAsync(userId);
+        return this.Ok(lists);
     }
 
     /// <summary>
@@ -53,18 +53,18 @@ public class TodoListController : ControllerBase
     {
         try
         {
-            var list = await _service.GetByIdAsync(id);
+            var list = await this.service.GetByIdAsync(id);
             if (list == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return Ok(list);
+            return this.Ok(list);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error getting todo list {Id}", id);
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error getting todo list {Id}", id);
+            return this.StatusCode(500);
         }
     }
 
@@ -79,21 +79,23 @@ public class TodoListController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TodoListModel>> Create([FromBody] TodoListModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         try
         {
             model.CreatedDate = DateTime.UtcNow;
-            var created = await _service.CreateAsync(model);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var created = await this.service.CreateAsync(model);
+            return this.CreatedAtAction(nameof(this.GetById), new { id = created.Id }, created);
         }
         catch (NotFoundException ex)
         {
-            _logger.LogWarning(ex, "Not found during create");
-            return NotFound();
+            this.logger.LogWarning(ex, "Not found during create");
+            return this.NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating todo list");
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error creating todo list");
+            return this.StatusCode(500);
         }
     }
 
@@ -109,20 +111,22 @@ public class TodoListController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Update(int id, [FromBody] TodoListModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         try
         {
             model.Id = id;
-            await _service.UpdateAsync(model);
-            return NoContent();
+            await this.service.UpdateAsync(model);
+            return this.NoContent();
         }
         catch (NotFoundException)
         {
-            return NotFound();
+            return this.NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating todo list {Id}", id);
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error updating todo list {Id}", id);
+            return this.StatusCode(500);
         }
     }
 
@@ -139,17 +143,17 @@ public class TodoListController : ControllerBase
     {
         try
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            await this.service.DeleteAsync(id);
+            return this.NoContent();
         }
         catch (NotFoundException)
         {
-            return NotFound();
+            return this.NotFound();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error deleting todo list {Id}", id);
-            return StatusCode(500);
+            this.logger.LogError(ex, "Error deleting todo list {Id}", id);
+            return this.StatusCode(500);
         }
     }
 }

@@ -11,27 +11,32 @@ namespace TodoListApp.WebApp.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
-    {
-        _logger = logger;
-    }
-
+    /// <summary>
+    /// Displays the home page.
+    /// </summary>
+    [HttpGet]
     public IActionResult Index()
     {
-        return View();
+        return this.View();
     }
 
+    /// <summary>
+    /// Displays the privacy page.
+    /// </summary>
+    [HttpGet]
     public IActionResult Privacy()
     {
-        return View();
+        return this.View();
     }
 
+    /// <summary>
+    /// Displays the error page.
+    /// </summary>
+    [HttpGet]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     [AllowAnonymous]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return this.View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? this.HttpContext.TraceIdentifier });
     }
 }

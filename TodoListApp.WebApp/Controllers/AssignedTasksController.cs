@@ -12,18 +12,15 @@ namespace TodoListApp.WebApp.Controllers;
 [Authorize]
 public class AssignedTasksController : Controller
 {
-    private readonly ITodoItemWebApiService _todoItemService;
-    private readonly ILogger<AssignedTasksController> _logger;
+    private readonly ITodoItemWebApiService todoItemService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AssignedTasksController"/> class.
     /// </summary>
     /// <param name="todoItemService">The todo item Web API service.</param>
-    /// <param name="logger">The logger.</param>
-    public AssignedTasksController(ITodoItemWebApiService todoItemService, ILogger<AssignedTasksController> logger)
+    public AssignedTasksController(ITodoItemWebApiService todoItemService)
     {
-        _todoItemService = todoItemService;
-        _logger = logger;
+        this.todoItemService = todoItemService;
     }
 
     /// <summary>
@@ -31,10 +28,11 @@ public class AssignedTasksController : Controller
     /// </summary>
     /// <param name="statusFilter">Optional filter: "0", "1", "2" for status, or null for all active (Status != 2).</param>
     /// <param name="sortBy">Sort by "title" or "duedate".</param>
+    [HttpGet]
     public async Task<IActionResult> Index(string? statusFilter, string? sortBy)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var items = (await _todoItemService.GetAssignedToUserAsync(userId)).ToList();
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        var items = (await this.todoItemService.GetAssignedToUserAsync(userId)).ToList();
 
         if (string.IsNullOrEmpty(statusFilter))
         {
@@ -45,16 +43,16 @@ public class AssignedTasksController : Controller
             items = items.Where(i => i.Status == status).ToList();
         }
 
-        items = sortBy?.ToLowerInvariant() switch
+        items = sortBy?.ToUpperInvariant() switch
         {
-            "title" => items.OrderBy(i => i.Title).ToList(),
-            "duedate" => items.OrderBy(i => i.DueDate ?? DateTime.MaxValue).ToList(),
+            "TITLE" => items.OrderBy(i => i.Title).ToList(),
+            "DUEDATE" => items.OrderBy(i => i.DueDate ?? DateTime.MaxValue).ToList(),
             _ => items.OrderBy(i => i.DueDate ?? DateTime.MaxValue).ThenBy(i => i.Title).ToList(),
         };
 
-        ViewData["StatusFilter"] = statusFilter ?? "active";
-        ViewData["SortBy"] = sortBy ?? "duedate";
-        return View(items);
+        this.ViewData["StatusFilter"] = statusFilter ?? "active";
+        this.ViewData["SortBy"] = sortBy ?? "duedate";
+        return this.View(items);
     }
 
     /// <summary>
@@ -66,14 +64,14 @@ public class AssignedTasksController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ChangeStatus(int taskId, int newStatus)
     {
-        var item = await _todoItemService.GetByIdAsync(taskId);
+        var item = await this.todoItemService.GetByIdAsync(taskId);
         if (item == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
         item.Status = newStatus;
-        await _todoItemService.UpdateAsync(item);
-        return RedirectToAction(nameof(Index));
+        await this.todoItemService.UpdateAsync(item);
+        return this.RedirectToAction(nameof(this.Index));
     }
 }

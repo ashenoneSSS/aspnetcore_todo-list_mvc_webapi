@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.WebApp.Data;
+using TodoListApp.WebApp.Filters;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ApiUnavailableExceptionFilter>();
+});
 
 builder.Services.AddDbContext<UsersDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("UsersDb")));

@@ -12,37 +12,36 @@ namespace TodoListApp.WebApp.Controllers;
 [Authorize]
 public class TodoListController : Controller
 {
-    private readonly ITodoListWebApiService _todoListService;
-    private readonly ILogger<TodoListController> _logger;
+    private readonly ITodoListWebApiService todoListService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoListController"/> class.
     /// </summary>
     /// <param name="todoListService">The todo list Web API service.</param>
-    /// <param name="logger">The logger.</param>
-    public TodoListController(ITodoListWebApiService todoListService, ILogger<TodoListController> logger)
+    public TodoListController(ITodoListWebApiService todoListService)
     {
-        _todoListService = todoListService;
-        _logger = logger;
+        this.todoListService = todoListService;
     }
 
     /// <summary>
     /// Displays the list of user's todo lists.
     /// </summary>
     /// <returns>The index view.</returns>
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var lists = await _todoListService.GetAllAsync(userId);
-        return View(lists.ToList());
+        var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        var lists = await this.todoListService.GetAllAsync(userId);
+        return this.View(lists.ToList());
     }
 
     /// <summary>
     /// Displays the create form.
     /// </summary>
+    [HttpGet]
     public IActionResult Create()
     {
-        return View(new TodoListWebApiModel());
+        return this.View(new TodoListWebApiModel());
     }
 
     /// <summary>
@@ -52,28 +51,31 @@ public class TodoListController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TodoListWebApiModel model)
     {
-        if (ModelState.IsValid)
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (this.ModelState.IsValid)
         {
-            model.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-            await _todoListService.CreateAsync(model);
-            return RedirectToAction(nameof(Index));
+            model.UserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            await this.todoListService.CreateAsync(model);
+            return this.RedirectToAction(nameof(this.Index));
         }
 
-        return View(model);
+        return this.View(model);
     }
 
     /// <summary>
     /// Displays the edit form.
     /// </summary>
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var list = await _todoListService.GetByIdAsync(id);
+        var list = await this.todoListService.GetByIdAsync(id);
         if (list == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        return View(list);
+        return this.View(list);
     }
 
     /// <summary>
@@ -83,42 +85,46 @@ public class TodoListController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TodoListWebApiModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         if (id != model.Id)
         {
-            return BadRequest();
+            return this.BadRequest();
         }
 
-        if (ModelState.IsValid)
+        if (this.ModelState.IsValid)
         {
-            await _todoListService.UpdateAsync(model);
-            return RedirectToAction(nameof(Index));
+            await this.todoListService.UpdateAsync(model);
+            return this.RedirectToAction(nameof(this.Index));
         }
 
-        return View(model);
+        return this.View(model);
     }
 
     /// <summary>
     /// Displays the delete confirmation page.
     /// </summary>
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var list = await _todoListService.GetByIdAsync(id);
+        var list = await this.todoListService.GetByIdAsync(id);
         if (list == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        return View(list);
+        return this.View(list);
     }
 
     /// <summary>
     /// Handles delete confirmation.
     /// </summary>
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
+    [ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _todoListService.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
+        await this.todoListService.DeleteAsync(id);
+        return this.RedirectToAction(nameof(this.Index));
     }
 }

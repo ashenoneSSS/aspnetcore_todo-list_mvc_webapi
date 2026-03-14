@@ -12,62 +12,60 @@ namespace TodoListApp.WebApp.Controllers;
 [Authorize]
 public class TodoItemController : Controller
 {
-    private readonly ITodoItemWebApiService _todoItemService;
-    private readonly ITodoListWebApiService _todoListService;
-    private readonly ILogger<TodoItemController> _logger;
+    private readonly ITodoItemWebApiService todoItemService;
+    private readonly ITodoListWebApiService todoListService;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoItemController"/> class.
     /// </summary>
     /// <param name="todoItemService">The todo item Web API service.</param>
     /// <param name="todoListService">The todo list Web API service.</param>
-    /// <param name="logger">The logger.</param>
     public TodoItemController(
         ITodoItemWebApiService todoItemService,
-        ITodoListWebApiService todoListService,
-        ILogger<TodoItemController> logger)
+        ITodoListWebApiService todoListService)
     {
-        _todoItemService = todoItemService;
-        _todoListService = todoListService;
-        _logger = logger;
+        this.todoItemService = todoItemService;
+        this.todoListService = todoListService;
     }
 
     /// <summary>
     /// Displays tasks in a todo list.
     /// </summary>
     /// <param name="listId">The todo list identifier.</param>
+    [HttpGet]
     public async Task<IActionResult> Index(int listId)
     {
-        var list = await _todoListService.GetByIdAsync(listId);
+        var list = await this.todoListService.GetByIdAsync(listId);
         if (list == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        ViewData["TodoList"] = list;
-        var items = await _todoItemService.GetByListIdAsync(listId, pageSize: 100);
-        return View(items.ToList());
+        this.ViewData["TodoList"] = list;
+        var items = await this.todoItemService.GetByListIdAsync(listId, pageSize: 100);
+        return this.View(items.ToList());
     }
 
     /// <summary>
     /// Displays the create form.
     /// </summary>
+    [HttpGet]
     public async Task<IActionResult> Create(int listId)
     {
-        var list = await _todoListService.GetByIdAsync(listId);
+        var list = await this.todoListService.GetByIdAsync(listId);
         if (list == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        ViewData["TodoList"] = list;
+        this.ViewData["TodoList"] = list;
         var model = new TodoItemWebApiModel
         {
             TodoListId = listId,
             Status = 0,
-            AssigneeId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
+            AssigneeId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
         };
-        return View(model);
+        return this.View(model);
     }
 
     /// <summary>
@@ -77,37 +75,39 @@ public class TodoItemController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(TodoItemWebApiModel model)
     {
-        if (ModelState.IsValid)
+        ArgumentNullException.ThrowIfNull(model);
+
+        if (this.ModelState.IsValid)
         {
             model.CreatedDate = DateTime.UtcNow;
             if (string.IsNullOrEmpty(model.AssigneeId))
             {
-                model.AssigneeId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+                model.AssigneeId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
             }
 
-            await _todoItemService.CreateAsync(model);
-            return RedirectToAction(nameof(Index), new { listId = model.TodoListId });
+            await this.todoItemService.CreateAsync(model);
+            return this.RedirectToAction(nameof(this.Index), new { listId = model.TodoListId });
         }
 
-        var list = await _todoListService.GetByIdAsync(model.TodoListId);
-        ViewData["TodoList"] = list;
-        return View(model);
+        var list = await this.todoListService.GetByIdAsync(model.TodoListId);
+        this.ViewData["TodoList"] = list;
+        return this.View(model);
     }
 
     /// <summary>
     /// Displays the edit form.
     /// </summary>
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var item = await _todoItemService.GetByIdAsync(id);
+        var (item, list) = await this.GetItemWithListAsync(id);
         if (item == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        var list = await _todoListService.GetByIdAsync(item.TodoListId);
-        ViewData["TodoList"] = list;
-        return View(item);
+        this.ViewData["TodoList"] = list;
+        return this.View(item);
     }
 
     /// <summary>
@@ -117,62 +117,77 @@ public class TodoItemController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, TodoItemWebApiModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         if (id != model.Id)
         {
-            return BadRequest();
+            return this.BadRequest();
         }
 
-        if (ModelState.IsValid)
+        if (this.ModelState.IsValid)
         {
-            await _todoItemService.UpdateAsync(model);
-            return RedirectToAction(nameof(Index), new { listId = model.TodoListId });
+            await this.todoItemService.UpdateAsync(model);
+            return this.RedirectToAction(nameof(this.Index), new { listId = model.TodoListId });
         }
 
-        var list = await _todoListService.GetByIdAsync(model.TodoListId);
-        ViewData["TodoList"] = list;
-        return View(model);
+        var list = await this.todoListService.GetByIdAsync(model.TodoListId);
+        this.ViewData["TodoList"] = list;
+        return this.View(model);
     }
 
     /// <summary>
     /// Displays task details.
     /// </summary>
+    [HttpGet]
     public async Task<IActionResult> Details(int id)
     {
-        var item = await _todoItemService.GetByIdAsync(id);
+        var (item, list) = await this.GetItemWithListAsync(id);
         if (item == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        var list = await _todoListService.GetByIdAsync(item.TodoListId);
-        ViewData["TodoList"] = list;
-        return View(item);
+        this.ViewData["TodoList"] = list;
+        return this.View(item);
     }
 
     /// <summary>
     /// Displays the delete confirmation page.
     /// </summary>
+    [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var item = await _todoItemService.GetByIdAsync(id);
+        var (item, list) = await this.GetItemWithListAsync(id);
         if (item == null)
         {
-            return NotFound();
+            return this.NotFound();
         }
 
-        var list = await _todoListService.GetByIdAsync(item.TodoListId);
-        ViewData["TodoList"] = list;
-        return View(item);
+        this.ViewData["TodoList"] = list;
+        return this.View(item);
     }
 
     /// <summary>
     /// Handles delete confirmation.
     /// </summary>
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
+    [ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id, int listId)
     {
-        await _todoItemService.DeleteAsync(id);
-        return RedirectToAction(nameof(Index), new { listId });
+        await this.todoItemService.DeleteAsync(id);
+        return this.RedirectToAction(nameof(this.Index), new { listId });
+    }
+
+    private async Task<(TodoItemWebApiModel? Item, TodoListWebApiModel? List)> GetItemWithListAsync(int itemId)
+    {
+        var item = await this.todoItemService.GetByIdAsync(itemId);
+        if (item == null)
+        {
+            return (null, null);
+        }
+
+        var list = await this.todoListService.GetByIdAsync(item.TodoListId);
+        return (item, list);
     }
 }

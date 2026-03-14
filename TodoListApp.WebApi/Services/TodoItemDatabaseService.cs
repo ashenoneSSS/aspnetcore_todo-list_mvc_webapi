@@ -11,7 +11,7 @@ namespace TodoListApp.WebApi.Services;
 /// </summary>
 public class TodoItemDatabaseService : ITodoItemDatabaseService
 {
-    private readonly TodoListDbContext _context;
+    private readonly TodoListDbContext context;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoItemDatabaseService"/> class.
@@ -19,7 +19,7 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     /// <param name="context">The database context.</param>
     public TodoItemDatabaseService(TodoListDbContext context)
     {
-        _context = context;
+        this.context = context;
     }
 
     /// <inheritdoc />
@@ -27,7 +27,7 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     {
         var skip = (page - 1) * pageSize;
 
-        var entities = await _context.TodoItems
+        var entities = await this.context.TodoItems
             .Where(i => i.TodoListId == listId)
             .OrderBy(i => i.CreatedDate)
             .Skip(skip)
@@ -40,14 +40,14 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     /// <inheritdoc />
     public async Task<TodoItemModel?> GetByIdAsync(int id)
     {
-        var entity = await _context.TodoItems.FindAsync(id);
+        var entity = await this.context.TodoItems.FindAsync(id);
         return entity == null ? null : MapToModel(entity);
     }
 
     /// <inheritdoc />
     public async Task<IEnumerable<TodoItemModel>> GetAssignedToUserAsync(string userId)
     {
-        var entities = await _context.TodoItems
+        var entities = await this.context.TodoItems
             .Where(i => i.AssigneeId == userId)
             .OrderBy(i => i.DueDate)
             .ThenBy(i => i.Title)
@@ -59,6 +59,8 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     /// <inheritdoc />
     public async Task<TodoItemModel> CreateAsync(TodoItemModel model)
     {
+        ArgumentNullException.ThrowIfNull(model);
+
         var entity = new TodoItemEntity
         {
             Title = model.Title,
@@ -70,8 +72,8 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
             TodoListId = model.TodoListId,
         };
 
-        _context.TodoItems.Add(entity);
-        await _context.SaveChangesAsync();
+        this.context.TodoItems.Add(entity);
+        await this.context.SaveChangesAsync();
 
         return MapToModel(entity);
     }
@@ -79,7 +81,9 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     /// <inheritdoc />
     public async Task UpdateAsync(TodoItemModel model)
     {
-        var entity = await _context.TodoItems.FindAsync(model.Id)
+        ArgumentNullException.ThrowIfNull(model);
+
+        var entity = await this.context.TodoItems.FindAsync(model.Id)
             ?? throw new NotFoundException($"Todo item with id {model.Id} not found.");
 
         entity.Title = model.Title;
@@ -88,17 +92,17 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         entity.Status = model.Status;
         entity.AssigneeId = model.AssigneeId;
 
-        await _context.SaveChangesAsync();
+        await this.context.SaveChangesAsync();
     }
 
     /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
-        var entity = await _context.TodoItems.FindAsync(id)
+        var entity = await this.context.TodoItems.FindAsync(id)
             ?? throw new NotFoundException($"Todo item with id {id} not found.");
 
-        _context.TodoItems.Remove(entity);
-        await _context.SaveChangesAsync();
+        this.context.TodoItems.Remove(entity);
+        await this.context.SaveChangesAsync();
     }
 
     private static TodoItemModel MapToModel(TodoItemEntity entity)
