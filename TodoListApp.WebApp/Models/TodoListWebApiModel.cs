@@ -15,12 +15,14 @@ public class TodoListWebApiModel
     /// <summary>
     /// Gets or sets the list title.
     /// </summary>
-    [Required]
+    [Required(ErrorMessage = "Title is required")]
+    [StringLength(200, MinimumLength = 1)]
     public string Title { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the list description.
     /// </summary>
+    [StringLength(2000)]
     public string Description { get; set; } = string.Empty;
 
     /// <summary>

@@ -77,6 +77,52 @@ public class TodoItemWebApiService : ITodoItemWebApiService
     }
 
     /// <inheritdoc />
+    public async Task<IEnumerable<TodoItemWebApiModel>> SearchAsync(
+        string userId,
+        string? title,
+        DateTime? createdDateFrom,
+        DateTime? createdDateTo,
+        DateTime? dueDateFrom,
+        DateTime? dueDateTo,
+        int page = 1,
+        int pageSize = 20)
+    {
+        var query = new List<string> { $"userId={Uri.EscapeDataString(userId)}", $"page={page}", $"pageSize={pageSize}" };
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            query.Add($"title={Uri.EscapeDataString(title.Trim())}");
+        }
+
+        if (createdDateFrom.HasValue)
+        {
+            query.Add($"createdDateFrom={createdDateFrom:yyyy-MM-dd}");
+        }
+
+        if (createdDateTo.HasValue)
+        {
+            query.Add($"createdDateTo={createdDateTo:yyyy-MM-dd}");
+        }
+
+        if (dueDateFrom.HasValue)
+        {
+            query.Add($"dueDateFrom={dueDateFrom:yyyy-MM-dd}");
+        }
+
+        if (dueDateTo.HasValue)
+        {
+            query.Add($"dueDateTo={dueDateTo:yyyy-MM-dd}");
+        }
+
+        var uri = new Uri(
+            this.httpClient.BaseAddress!,
+            "api/search?" + string.Join("&", query));
+        var response = await SendAsync(() => this.httpClient.GetAsync(uri));
+        _ = response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<IEnumerable<TodoItemWebApiModel>>(JsonOptions);
+        return result ?? Enumerable.Empty<TodoItemWebApiModel>();
+    }
+
+    /// <inheritdoc />
     public Task CreateAsync(TodoItemWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);

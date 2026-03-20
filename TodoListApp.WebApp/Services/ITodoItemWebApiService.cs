@@ -31,6 +31,28 @@ public interface ITodoItemWebApiService
     Task<IEnumerable<TodoItemWebApiModel>> GetAssignedToUserAsync(string userId);
 
     /// <summary>
+    /// Searches for tasks by criteria.
+    /// </summary>
+    /// <param name="userId">The user identifier.</param>
+    /// <param name="title">Optional title search.</param>
+    /// <param name="createdDateFrom">Optional creation date from.</param>
+    /// <param name="createdDateTo">Optional creation date to.</param>
+    /// <param name="dueDateFrom">Optional due date from.</param>
+    /// <param name="dueDateTo">Optional due date to.</param>
+    /// <param name="page">Page number.</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <returns>Collection of todo item models.</returns>
+    Task<IEnumerable<TodoItemWebApiModel>> SearchAsync(
+        string userId,
+        string? title,
+        DateTime? createdDateFrom,
+        DateTime? createdDateTo,
+        DateTime? dueDateFrom,
+        DateTime? dueDateTo,
+        int page = 1,
+        int pageSize = 20);
+
+    /// <summary>
     /// Creates a new todo item.
     /// </summary>
     /// <param name="model">The todo item model.</param>

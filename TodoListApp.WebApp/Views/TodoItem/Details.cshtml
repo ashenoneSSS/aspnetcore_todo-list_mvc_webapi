@@ -16,6 +16,16 @@
     <dd class="col-sm-10">@(Model.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</dd>
     <dt class="col-sm-2">Assignee</dt>
     <dd class="col-sm-10">@Model.AssigneeId</dd>
+    @if (Model.Tags?.Count > 0)
+    {
+        <dt class="col-sm-2">Tags</dt>
+        <dd class="col-sm-10">
+            @foreach (var tag in Model.Tags)
+            {
+                <a asp-controller="Tags" asp-action="Tasks" asp-route-id="@tag.Id" class="badge bg-secondary text-decoration-none me-1">@tag.Name</a>
+            }
+        </dd>
+    }
 </dl>
 
 <p>

@@ -24,6 +24,7 @@ builder.Services.AddIdentity<ApplicationUser, Microsoft.AspNetCore.Identity.Iden
 
 builder.Services.AddHttpClient<ITodoListWebApiService, TodoListWebApiService>();
 builder.Services.AddHttpClient<ITodoItemWebApiService, TodoItemWebApiService>();
+builder.Services.AddHttpClient<ITagWebApiService, TagWebApiService>();
 
 var app = builder.Build();
 

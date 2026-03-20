@@ -1,0 +1,21 @@
+@model IList<TodoListApp.WebApp.Models.TagWebApiModel>
+@{
+    ViewData["Title"] = "All Tags";
+}
+
+<h2>All Tags</h2>
+
+@if (Model.Count > 0)
+{
+    <p class="text-muted">Click a tag to see tasks with that tag.</p>
+    <div class="d-flex flex-wrap gap-2">
+        @foreach (var tag in Model)
+        {
+            <a asp-action="Tasks" asp-route-id="@tag.Id" class="btn btn-outline-primary">@tag.Name</a>
+        }
+    </div>
+}
+else
+{
+    <p class="text-muted">No tags yet. Add tags to tasks from the task edit page.</p>
+}

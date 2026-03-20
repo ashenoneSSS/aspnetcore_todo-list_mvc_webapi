@@ -3,7 +3,7 @@ namespace TodoListApp.WebApi.Models.Entities;
 /// <summary>
 /// Entity representing a todo list in the database.
 /// </summary>
-public class TodoListEntity
+public sealed class TodoListEntity
 {
     /// <summary>
     /// Gets or sets the unique identifier.

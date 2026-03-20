@@ -3,7 +3,7 @@ namespace TodoListApp.WebApi.Exceptions;
 /// <summary>
 /// Exception thrown when an entity is not found.
 /// </summary>
-public class NotFoundException : Exception
+public sealed class NotFoundException : Exception
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="NotFoundException"/> class.

@@ -5,7 +5,7 @@ namespace TodoListApp.WebApi.Middleware;
 /// <summary>
 /// Middleware for API key Bearer authentication.
 /// </summary>
-public class ApiKeyAuthMiddleware
+public sealed class ApiKeyAuthMiddleware
 {
     private const string AuthorizationHeader = "Authorization";
     private const string BearerPrefix = "Bearer ";

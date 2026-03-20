@@ -43,6 +43,14 @@ public partial class TodoItemController : ControllerBase
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 10)
     {
+        if (listId < 1)
+        {
+            return this.BadRequest("listId must be a positive integer.");
+        }
+
+        page = Math.Max(1, page);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
         var items = await this.service.GetByListIdAsync(listId, page, pageSize);
         return this.Ok(items);
     }
@@ -56,6 +64,11 @@ public partial class TodoItemController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<TodoItemModel>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<TodoItemModel>>> GetAssigned([FromQuery] string userId)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return this.BadRequest("userId is required.");
+        }
+
         var items = await this.service.GetAssignedToUserAsync(userId);
         return this.Ok(items);
     }

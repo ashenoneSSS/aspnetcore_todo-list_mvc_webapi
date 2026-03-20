@@ -38,6 +38,11 @@ public partial class TodoListController : ControllerBase
     [ProducesResponseType(typeof(IEnumerable<TodoListModel>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<TodoListModel>>> GetAll([FromQuery] string userId)
     {
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return this.BadRequest("userId is required.");
+        }
+
         var lists = await this.service.GetAllAsync(userId);
         return this.Ok(lists);
     }

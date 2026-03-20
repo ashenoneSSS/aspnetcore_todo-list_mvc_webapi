@@ -1,6 +1,77 @@
 @{
-    ViewData["Title"] = "Search";
+    ViewData["Title"] = "Search Tasks";
+    var results = ViewData["Results"] as IList<TodoListApp.WebApp.Models.TodoItemWebApiModel> ?? new List<TodoListApp.WebApp.Models.TodoItemWebApiModel>();
+    var titleVal = ViewData["Title"] as string ?? string.Empty;
+    var createdFrom = ViewData["CreatedDateFrom"] as string ?? string.Empty;
+    var createdTo = ViewData["CreatedDateTo"] as string ?? string.Empty;
+    var dueFrom = ViewData["DueDateFrom"] as string ?? string.Empty;
+    var dueTo = ViewData["DueDateTo"] as string ?? string.Empty;
 }
 
 <h2>Search Tasks</h2>
-<p>Search functionality will be implemented in a future update.</p>
+
+<form method="get" asp-action="Index" class="card p-3 mb-4">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label for="title" class="form-label">Title (contains)</label>
+            <input type="text" id="title" name="title" class="form-control" value="@titleVal" placeholder="Search by task title..." />
+        </div>
+        <div class="col-md-2">
+            <label for="createdDateFrom" class="form-label">Created from</label>
+            <input type="date" id="createdDateFrom" name="createdDateFrom" class="form-control" value="@createdFrom" />
+        </div>
+        <div class="col-md-2">
+            <label for="createdDateTo" class="form-label">Created to</label>
+            <input type="date" id="createdDateTo" name="createdDateTo" class="form-control" value="@createdTo" />
+        </div>
+        <div class="col-md-2">
+            <label for="dueDateFrom" class="form-label">Due from</label>
+            <input type="date" id="dueDateFrom" name="dueDateFrom" class="form-control" value="@dueFrom" />
+        </div>
+        <div class="col-md-2">
+            <label for="dueDateTo" class="form-label">Due to</label>
+            <input type="date" id="dueDateTo" name="dueDateTo" class="form-control" value="@dueTo" />
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
+
+@if (results.Count > 0)
+{
+    <p class="text-muted">Found @results.Count task(s). Overdue tasks are highlighted.</p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Created</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in results)
+            {
+                <tr class="@(item.IsOverdue ? "table-danger" : "")">
+                    <td>@item.Title</td>
+                    <td>@item.CreatedDate.ToString("yyyy-MM-dd")</td>
+                    <td class="@(item.IsOverdue ? "text-danger fw-bold" : "")">@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                    <td>@(item.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</td>
+                    <td>
+                        <a asp-controller="TodoItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (!string.IsNullOrEmpty(ViewData["Title"] as string) || !string.IsNullOrEmpty(createdFrom) || !string.IsNullOrEmpty(createdTo) || !string.IsNullOrEmpty(dueFrom) || !string.IsNullOrEmpty(dueTo))
+{
+    <p class="text-muted">No tasks found matching your criteria.</p>
+}
+else
+{
+    <p class="text-muted">Enter search criteria above and click Search.</p>
+}

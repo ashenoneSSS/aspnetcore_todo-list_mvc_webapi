@@ -28,6 +28,7 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         var skip = (page - 1) * pageSize;
 
         var entities = await this.context.TodoItems
+            .Include(i => i.Tags)
             .Where(i => i.TodoListId == listId)
             .OrderBy(i => i.CreatedDate)
             .Skip(skip)
@@ -40,7 +41,9 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     /// <inheritdoc />
     public async Task<TodoItemModel?> GetByIdAsync(int id)
     {
-        var entity = await this.context.TodoItems.FindAsync(id);
+        var entity = await this.context.TodoItems
+            .Include(i => i.Tags)
+            .FirstOrDefaultAsync(i => i.Id == id);
         return entity == null ? null : MapToModel(entity);
     }
 
@@ -48,9 +51,65 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     public async Task<IEnumerable<TodoItemModel>> GetAssignedToUserAsync(string userId)
     {
         var entities = await this.context.TodoItems
+            .Include(i => i.Tags)
             .Where(i => i.AssigneeId == userId)
             .OrderBy(i => i.DueDate)
             .ThenBy(i => i.Title)
+            .ToListAsync();
+
+        return entities.Select(MapToModel);
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<TodoItemModel>> SearchAsync(
+        string userId,
+        string? title,
+        DateTime? createdDateFrom,
+        DateTime? createdDateTo,
+        DateTime? dueDateFrom,
+        DateTime? dueDateTo,
+        int page = 1,
+        int pageSize = 10)
+    {
+        var query = this.context.TodoItems
+            .Include(i => i.TodoList)
+            .Where(i => i.TodoList.UserId == userId);
+
+        if (!string.IsNullOrWhiteSpace(title))
+        {
+            var t = title.Trim();
+            query = query.Where(i => i.Title.Contains(t));
+        }
+
+        if (createdDateFrom.HasValue)
+        {
+            query = query.Where(i => i.CreatedDate >= createdDateFrom.Value);
+        }
+
+        if (createdDateTo.HasValue)
+        {
+            var to = createdDateTo.Value.Date.AddDays(1);
+            query = query.Where(i => i.CreatedDate < to);
+        }
+
+        if (dueDateFrom.HasValue)
+        {
+            query = query.Where(i => i.DueDate != null && i.DueDate >= dueDateFrom.Value);
+        }
+
+        if (dueDateTo.HasValue)
+        {
+            var to = dueDateTo.Value.Date.AddDays(1);
+            query = query.Where(i => i.DueDate != null && i.DueDate < to);
+        }
+
+        var skip = (Math.Max(1, page) - 1) * Math.Clamp(pageSize, 1, 100);
+        var entities = await query
+            .Include(i => i.Tags)
+            .OrderBy(i => i.DueDate)
+            .ThenBy(i => i.Title)
+            .Skip(skip)
+            .Take(Math.Clamp(pageSize, 1, 100))
             .ToListAsync();
 
         return entities.Select(MapToModel);
@@ -92,6 +151,7 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
             Status = entity.Status,
             AssigneeId = entity.AssigneeId,
             TodoListId = entity.TodoListId,
+            Tags = entity.Tags?.Select(t => new TagModel { Id = t.Id, Name = t.Name }).ToList() ?? new List<TagModel>(),
         };
     }
 

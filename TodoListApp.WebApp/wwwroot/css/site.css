@@ -1,19 +1,236 @@
+/* TodoListApp - Custom Design */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: #334155;
+  --accent-teal: #14b8a6;
+  --accent-teal-hover: #0d9488;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --text-primary: #f1f5f9;
+  --text-muted: #94a3b8;
+  --border-color: #475569;
+  --overdue: #f87171;
+}
+
 html {
-  font-size: 14px;
+  font-size: 15px;
   position: relative;
   min-height: 100%;
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
 body {
-  margin-bottom: 60px;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
+  color: var(--text-primary);
+  margin-bottom: 80px;
+  min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  color: var(--accent-teal) !important;
+  font-size: 1.25rem;
+}
+
+.navbar-brand:hover {
+  color: var(--accent-teal-hover) !important;
+}
+
+.nav-link {
+  color: var(--text-muted) !important;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-link:hover, .nav-link:focus {
+  color: var(--accent-teal) !important;
+}
+
+.navbar-toggler {
+  border-color: var(--border-color);
+}
+
+.navbar-toggler-icon {
+  filter: invert(1);
+}
+
+/* Main content */
+main {
+  padding-top: 1.5rem;
+}
+
+h1, h2, h3 {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--accent-teal);
+  display: inline-block;
+}
+
+/* Cards for lists */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Tables */
+.table {
+  background: var(--bg-secondary);
+  --bs-table-bg: var(--bg-secondary);
+  --bs-table-color: var(--text-primary);
+  --bs-table-striped-bg: #243246;
+  --bs-table-striped-color: var(--text-primary);
+  --bs-table-hover-bg: rgba(20, 184, 166, 0.08);
+  --bs-table-hover-color: var(--text-primary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.table thead th {
+  background: var(--bg-card);
+  color: var(--accent-teal);
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem;
+}
+
+.table tbody td {
+  padding: 0.9rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.table tbody tr:hover {
+  background: rgba(20, 184, 166, 0.08);
+}
+
+.table-danger {
+  background: rgba(248, 113, 113, 0.15) !important;
+}
+
+.table-danger td {
+  color: var(--overdue);
+}
+
+/* Buttons */
+.btn-primary {
+  background: var(--accent-teal);
+  border-color: var(--accent-teal);
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: var(--accent-teal-hover);
+  border-color: var(--accent-teal-hover);
+}
+
+.btn-outline-primary {
+  border-color: var(--accent-teal);
+  color: var(--accent-teal);
+}
+
+.btn-outline-primary:hover {
+  background: var(--accent-teal);
+  color: var(--bg-primary);
+}
+
+.btn-outline-secondary {
+  border-color: var(--border-color);
+  color: var(--text-muted);
+}
+
+.btn-outline-secondary:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.btn-outline-danger {
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+}
+
+.btn-outline-danger:hover {
+  background: var(--accent-rose);
+  color: white;
+}
+
+.btn:focus, .form-control:focus, .form-select:focus {
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.4);
+  border-color: var(--accent-teal);
+}
+
+/* Forms */
+.form-control, .form-select {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+.form-control:focus, .form-select:focus {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.form-label, label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Definition lists */
+dl.row dt {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+dl.row dd {
+  color: var(--text-primary);
+}
+
+.text-danger {
+  color: var(--overdue) !important;
+}
+
+/* Footer */
+.footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 1.5rem 0;
+}
+
+/* Links in table headers */
+.table thead th a {
+  color: var(--accent-teal);
+  text-decoration: none;
+}
+
+.table thead th a:hover {
+  text-decoration: underline;
 }

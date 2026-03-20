@@ -3,7 +3,7 @@ namespace TodoListApp.WebApi.Models.Entities;
 /// <summary>
 /// Entity representing a todo item in the database.
 /// </summary>
-public class TodoItemEntity
+public sealed class TodoItemEntity
 {
     /// <summary>
     /// Gets or sets the unique identifier.
@@ -49,4 +49,9 @@ public class TodoItemEntity
     /// Gets or sets the navigation property for the parent todo list.
     /// </summary>
     public TodoListEntity TodoList { get; set; } = null!;
+
+    /// <summary>
+    /// Gets the navigation property for tags on this item.
+    /// </summary>
+    public ICollection<TagEntity> Tags { get; } = new List<TagEntity>();
 }

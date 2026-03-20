@@ -15,6 +15,7 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
 builder.Services.AddScoped<ITodoItemDatabaseService, TodoItemDatabaseService>();
+builder.Services.AddScoped<ITagDatabaseService, TagDatabaseService>();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();

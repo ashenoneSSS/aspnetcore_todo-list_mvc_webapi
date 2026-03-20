@@ -31,6 +31,28 @@ public interface ITodoItemDatabaseService
     Task<IEnumerable<TodoItemModel>> GetAssignedToUserAsync(string userId);
 
     /// <summary>
+    /// Searches for todo items by criteria (title, creation date, due date).
+    /// </summary>
+    /// <param name="userId">The user identifier (scopes to lists owned by user).</param>
+    /// <param name="title">Optional title search (contains).</param>
+    /// <param name="createdDateFrom">Optional creation date from.</param>
+    /// <param name="createdDateTo">Optional creation date to.</param>
+    /// <param name="dueDateFrom">Optional due date from.</param>
+    /// <param name="dueDateTo">Optional due date to.</param>
+    /// <param name="page">Page number (1-based).</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <returns>Collection of todo item models.</returns>
+    Task<IEnumerable<TodoItemModel>> SearchAsync(
+        string userId,
+        string? title,
+        DateTime? createdDateFrom,
+        DateTime? createdDateTo,
+        DateTime? dueDateFrom,
+        DateTime? dueDateTo,
+        int page = 1,
+        int pageSize = 10);
+
+    /// <summary>
     /// Creates a new todo item.
     /// </summary>
     /// <param name="model">The todo item model.</param>

@@ -8,7 +8,7 @@
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AnalysisLevel>latest</AnalysisLevel>
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
-    <NoWarn>$(NoWarn);CA1031</NoWarn>
+    <NoWarn>$(NoWarn);CA1031;CA1515;CA1812;CA1852;SA1516</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

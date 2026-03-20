@@ -27,6 +27,11 @@ public class TodoListDbContext : DbContext
     /// </summary>
     public DbSet<TodoItemEntity> TodoItems { get; set; }
 
+    /// <summary>
+    /// Gets or sets the tags DbSet.
+    /// </summary>
+    public DbSet<TagEntity> Tags { get; set; }
+
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -38,5 +43,13 @@ public class TodoListDbContext : DbContext
             .WithMany(l => l.Items)
             .HasForeignKey(t => t.TodoListId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TodoItemEntity>()
+            .HasMany(t => t.Tags)
+            .WithMany(tag => tag.TodoItems)
+            .UsingEntity<Dictionary<string, object>>(
+                "TodoItemTag",
+                j => j.HasOne<TagEntity>().WithMany().HasForeignKey("TagId"),
+                j => j.HasOne<TodoItemEntity>().WithMany().HasForeignKey("TodoItemId"));
     }
 }
