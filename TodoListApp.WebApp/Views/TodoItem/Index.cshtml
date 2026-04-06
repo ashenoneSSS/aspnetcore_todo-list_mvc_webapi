@@ -1,0 +1,38 @@
+@model IList<TodoListApp.WebApp.Models.TodoItemWebApiModel>
+@{
+    ViewData["Title"] = "Tasks";
+    var list = ViewData["TodoList"] as TodoListApp.WebApp.Models.TodoListWebApiModel;
+}
+
+<h2>Tasks: @list?.Title</h2>
+
+<p>
+    <a asp-action="Create" asp-route-listId="@list?.Id" class="btn btn-primary">Add Task</a>
+    <a asp-controller="TodoList" asp-action="Index" class="btn btn-secondary">Back to Lists</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.IsOverdue ? "table-danger" : "")">
+                <td>@item.Title</td>
+                <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>@(item.Status == 0 ? "Not Started" : item.Status == 1 ? "In Progress" : "Completed")</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

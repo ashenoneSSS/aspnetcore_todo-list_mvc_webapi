@@ -1,0 +1,26 @@
+@model TodoListApp.WebApp.Models.TodoItemWebApiModel
+@{
+    ViewData["Title"] = "Task Details";
+    var list = ViewData["TodoList"] as TodoListApp.WebApp.Models.TodoListWebApiModel;
+}
+
+<h2>Task Details</h2>
+
+<dl class="row">
+    <dt class="col-sm-2">Title</dt>
+    <dd class="col-sm-10">@Model.Title</dd>
+    <dt class="col-sm-2">Description</dt>
+    <dd class="col-sm-10">@Model.Description</dd>
+    <dt class="col-sm-2">Due Date</dt>
+    <dd class="col-sm-10 @(Model.IsOverdue ? "text-danger" : "")">@(Model.DueDate?.ToString("yyyy-MM-dd") ?? "-")</dd>
+    <dt class="col-sm-2">Status</dt>
+    <dd class="col-sm-10">@(Model.Status == 0 ? "Not Started" : Model.Status == 1 ? "In Progress" : "Completed")</dd>
+    <dt class="col-sm-2">Assignee</dt>
+    <dd class="col-sm-10">@Model.AssigneeId</dd>
+</dl>
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+    <a asp-action="Index" asp-route-listId="@Model.TodoListId" class="btn btn-secondary">Back to List</a>
+</p>

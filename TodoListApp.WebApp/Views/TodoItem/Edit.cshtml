@@ -1,0 +1,45 @@
+@model TodoListApp.WebApp.Models.TodoItemWebApiModel
+@{
+    ViewData["Title"] = "Edit Task";
+    var list = ViewData["TodoList"] as TodoListApp.WebApp.Models.TodoListWebApiModel;
+}
+
+<h2>Edit Task</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="TodoListId" />
+    <input type="hidden" asp-for="CreatedDate" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label asp-for="DueDate" class="form-label"></label>
+        <input asp-for="DueDate" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" class="form-select">
+            <option value="0">Not Started</option>
+            <option value="1">In Progress</option>
+            <option value="2">Completed</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="AssigneeId" class="form-label"></label>
+        <input asp-for="AssigneeId" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" asp-route-listId="@Model.TodoListId" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
