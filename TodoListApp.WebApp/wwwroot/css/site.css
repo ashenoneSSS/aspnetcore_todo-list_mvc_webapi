@@ -25,8 +25,9 @@ body {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1a2e 100%);
   color: var(--text-primary);
-  margin-bottom: 80px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Navbar */
@@ -67,6 +68,7 @@ body {
 /* Main content */
 main {
   padding-top: 1.5rem;
+  flex: 1 0 auto;
 }
 
 h1, h2, h3 {
@@ -128,11 +130,16 @@ h2 {
 }
 
 .table-danger {
-  background: rgba(248, 113, 113, 0.15) !important;
+  /* Override Bootstrap table-danger (it is red/pink by default) */
+  --bs-table-bg: rgba(20, 184, 166, 0.10);
+  --bs-table-striped-bg: rgba(20, 184, 166, 0.14);
+  --bs-table-hover-bg: rgba(20, 184, 166, 0.16);
+  --bs-table-color: var(--text-primary);
+  background-color: rgba(20, 184, 166, 0.10) !important;
 }
 
 .table-danger td {
-  color: var(--overdue);
+  color: var(--text-primary);
 }
 
 /* Buttons */
@@ -223,6 +230,69 @@ dl.row dd {
   border-top: 1px solid var(--border-color);
   color: var(--text-muted);
   padding: 1.5rem 0;
+  margin-top: auto; /* stick footer to bottom on short pages */
+}
+
+/* Empty-state messages (higher contrast than text-muted) */
+.empty-state {
+  color: var(--text-primary);
+  background: rgba(20, 184, 166, 0.08);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: inline-block;
+}
+
+/* Task row colors by status (neutral, within theme) */
+.task-status-notstarted {
+  --bs-table-bg: rgba(244, 63, 94, 0.08);
+  --bs-table-striped-bg: rgba(244, 63, 94, 0.10);
+  --bs-table-hover-bg: rgba(244, 63, 94, 0.12);
+  --bs-table-color: var(--text-primary);
+  background-color: rgba(244, 63, 94, 0.08) !important;
+}
+
+.task-status-inprogress {
+  --bs-table-bg: rgba(245, 158, 11, 0.10);
+  --bs-table-striped-bg: rgba(245, 158, 11, 0.12);
+  --bs-table-hover-bg: rgba(245, 158, 11, 0.14);
+  --bs-table-color: var(--text-primary);
+  background-color: rgba(245, 158, 11, 0.10) !important;
+}
+
+.task-status-completed {
+  --bs-table-bg: rgba(20, 184, 166, 0.10);
+  --bs-table-striped-bg: rgba(20, 184, 166, 0.14);
+  --bs-table-hover-bg: rgba(20, 184, 166, 0.16);
+  --bs-table-color: var(--text-primary);
+  background-color: rgba(20, 184, 166, 0.10) !important;
+}
+
+.task-status-overdue {
+  box-shadow: none;
+}
+
+/* Action buttons inside tables (Tasks / Edit / Delete) */
+.list-actions {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.list-actions .btn {
+  flex: 1 1 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@media (max-width: 576px) {
+  .list-actions {
+    flex-wrap: wrap;
+  }
+
+  .list-actions .btn {
+    flex: 1 1 100%;
+  }
 }
 
 /* Links in table headers */

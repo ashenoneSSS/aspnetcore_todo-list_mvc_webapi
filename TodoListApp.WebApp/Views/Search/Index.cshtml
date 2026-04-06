@@ -1,7 +1,7 @@
 @{
     ViewData["Title"] = "Search Tasks";
     var results = ViewData["Results"] as IList<TodoListApp.WebApp.Models.TodoItemWebApiModel> ?? new List<TodoListApp.WebApp.Models.TodoItemWebApiModel>();
-    var titleVal = ViewData["Title"] as string ?? string.Empty;
+    var titleVal = ViewData["SearchTitle"] as string ?? string.Empty;
     var createdFrom = ViewData["CreatedDateFrom"] as string ?? string.Empty;
     var createdTo = ViewData["CreatedDateTo"] as string ?? string.Empty;
     var dueFrom = ViewData["DueDateFrom"] as string ?? string.Empty;
@@ -67,7 +67,7 @@
         </tbody>
     </table>
 }
-else if (!string.IsNullOrEmpty(ViewData["Title"] as string) || !string.IsNullOrEmpty(createdFrom) || !string.IsNullOrEmpty(createdTo) || !string.IsNullOrEmpty(dueFrom) || !string.IsNullOrEmpty(dueTo))
+else if (!string.IsNullOrEmpty(titleVal) || !string.IsNullOrEmpty(createdFrom) || !string.IsNullOrEmpty(createdTo) || !string.IsNullOrEmpty(dueFrom) || !string.IsNullOrEmpty(dueTo))
 {
     <p class="text-muted">No tasks found matching your criteria.</p>
 }

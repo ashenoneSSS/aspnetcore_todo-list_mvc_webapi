@@ -24,9 +24,11 @@
                 <td>@list.Title</td>
                 <td>@list.Description</td>
                 <td>
-                    <a asp-controller="TodoItem" asp-action="Index" asp-route-listId="@list.Id" class="btn btn-sm btn-outline-primary">Tasks</a>
-                    <a asp-action="Edit" asp-route-id="@list.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@list.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    <div class="list-actions">
+                        <a asp-controller="TodoItem" asp-action="Index" asp-route-listId="@list.Id" class="btn btn-sm btn-outline-primary">Tasks</a>
+                        <a asp-action="Edit" asp-route-id="@list.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@list.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </div>
                 </td>
             </tr>
         }

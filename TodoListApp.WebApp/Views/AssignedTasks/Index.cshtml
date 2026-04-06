@@ -1,7 +1,7 @@
 @model IList<TodoListApp.WebApp.Models.TodoItemWebApiModel>
 @{
     ViewData["Title"] = "My Assigned Tasks";
-    var statusFilter = ViewData["StatusFilter"] as string ?? "active";
+    var statusFilter = ViewData["StatusFilter"] as string ?? string.Empty;
     var sortBy = ViewData["SortBy"] as string ?? "duedate";
 }
 
@@ -12,7 +12,6 @@
         <form method="get" class="d-inline-flex gap-2">
             <label for="statusFilter" class="col-form-label">Filter by status:</label>
             <select id="statusFilter" name="statusFilter" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
-                <option value="active" selected="@(statusFilter == "active")">Active only</option>
                 <option value="" selected="@(statusFilter == "")">All</option>
                 <option value="0" selected="@(statusFilter == "0")">Not Started</option>
                 <option value="1" selected="@(statusFilter == "1")">In Progress</option>
@@ -36,7 +35,17 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr class="@(item.IsOverdue ? "table-danger" : "")">
+            var statusClass = item.Status switch
+            {
+                0 => "task-status-notstarted",
+                1 => "task-status-inprogress",
+                _ => "task-status-completed",
+            };
+            var rowClass = item.IsOverdue && item.Status != 2
+                ? $"{statusClass} task-status-overdue"
+                : statusClass;
+
+            <tr class="@rowClass">
                 <td>@item.Title</td>
                 <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
                 <td>@(item.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</td>

@@ -34,11 +34,7 @@ public class AssignedTasksController : Controller
         var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         var items = (await this.todoItemService.GetAssignedToUserAsync(userId)).ToList();
 
-        if (string.IsNullOrEmpty(statusFilter))
-        {
-            items = items.Where(i => i.Status != 2).ToList();
-        }
-        else if (int.TryParse(statusFilter, out int status))
+        if (!string.IsNullOrWhiteSpace(statusFilter) && int.TryParse(statusFilter, out int status))
         {
             items = items.Where(i => i.Status == status).ToList();
         }
@@ -50,7 +46,7 @@ public class AssignedTasksController : Controller
             _ => items.OrderBy(i => i.DueDate ?? DateTime.MaxValue).ThenBy(i => i.Title).ToList(),
         };
 
-        this.ViewData["StatusFilter"] = statusFilter ?? "active";
+        this.ViewData["StatusFilter"] = statusFilter ?? string.Empty;
         this.ViewData["SortBy"] = sortBy ?? "duedate";
         return this.View(items);
     }

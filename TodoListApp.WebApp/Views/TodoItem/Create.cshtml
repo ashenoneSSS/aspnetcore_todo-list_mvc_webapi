@@ -25,10 +25,12 @@
     <div class="mb-3">
         <label asp-for="Status" class="form-label" for="@Html.IdFor(m => m.Status)">Status</label>
         <select asp-for="Status" id="@Html.IdFor(m => m.Status)" class="form-select">
+            <option value="-1" selected disabled>Select status...</option>
             <option value="0">Not Started</option>
             <option value="1">In Progress</option>
             <option value="2">Completed</option>
         </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Create</button>
     <a asp-action="Index" asp-route-listId="@Model.TodoListId" class="btn btn-secondary">Cancel</a>

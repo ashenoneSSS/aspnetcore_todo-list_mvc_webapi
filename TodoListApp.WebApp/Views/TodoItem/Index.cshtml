@@ -23,14 +23,23 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr class="@(item.IsOverdue ? "table-danger" : "")">
+            var statusClass = item.Status switch
+            {
+                0 => "task-status-notstarted",
+                1 => "task-status-inprogress",
+                _ => "task-status-completed",
+            };
+
+            <tr class="@statusClass">
                 <td>@item.Title</td>
                 <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
                 <td>@(item.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    <div class="list-actions">
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
+                    </div>
                 </td>
             </tr>
         }

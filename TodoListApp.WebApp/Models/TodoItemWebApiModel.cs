@@ -38,7 +38,7 @@ public class TodoItemWebApiModel
     /// <summary>
     /// Gets or sets the task status (0=NotStarted, 1=InProgress, 2=Completed).
     /// </summary>
-    [Range(0, 2)]
+    [Range(0, 2, ErrorMessage = "Status is required")]
     public int Status { get; set; }
 
     /// <summary>

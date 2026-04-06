@@ -62,7 +62,7 @@ public class TodoItemController : Controller
         var model = new TodoItemWebApiModel
         {
             TodoListId = listId,
-            Status = 0,
+            Status = -1,
             AssigneeId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
         };
         return this.View(model);

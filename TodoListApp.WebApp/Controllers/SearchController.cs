@@ -51,7 +51,7 @@ public class SearchController : Controller
         if (!hasCriteria)
         {
             this.ViewData["Results"] = Array.Empty<TodoItemWebApiModel>();
-            this.ViewData["Title"] = title ?? string.Empty;
+            this.ViewData["SearchTitle"] = title ?? string.Empty;
             this.ViewData["CreatedDateFrom"] = createdDateFrom?.ToString("yyyy-MM-dd") ?? string.Empty;
             this.ViewData["CreatedDateTo"] = createdDateTo?.ToString("yyyy-MM-dd") ?? string.Empty;
             this.ViewData["DueDateFrom"] = dueDateFrom?.ToString("yyyy-MM-dd") ?? string.Empty;
@@ -70,7 +70,7 @@ public class SearchController : Controller
             pageSize: 50)).ToList();
 
         this.ViewData["Results"] = items;
-        this.ViewData["Title"] = title ?? string.Empty;
+        this.ViewData["SearchTitle"] = title ?? string.Empty;
         this.ViewData["CreatedDateFrom"] = createdDateFrom?.ToString("yyyy-MM-dd") ?? string.Empty;
         this.ViewData["CreatedDateTo"] = createdDateTo?.ToString("yyyy-MM-dd") ?? string.Empty;
         this.ViewData["DueDateFrom"] = dueDateFrom?.ToString("yyyy-MM-dd") ?? string.Empty;
