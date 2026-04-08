@@ -37,18 +37,22 @@ The WebApp communicates with the WebApi via typed `HttpClient` services and send
 
 ## Screenshots (add yours here)
 
-Put screenshots into `docs/screenshots/` and link them here:
+Add screenshots to `docs/screenshots/` and update/replace the files below.
 
-- **Login**: `docs/screenshots/login.png`
-- **Register**: `docs/screenshots/register.png`
-- **My Lists**: `docs/screenshots/lists.png`
-- **Tasks in a List (status colors)**: `docs/screenshots/tasks.png`
-- **Assign by email**: `docs/screenshots/assign-by-email.png`
-- **Virtual list: Assigned to me**: `docs/screenshots/assigned-virtual-list.png`
-- **My Tasks (assigned)**: `docs/screenshots/assigned-tasks.png`
-- **Assignee can edit status only**: `docs/screenshots/assignee-status-only.png`
-- **Task details**: `docs/screenshots/task-details.png`
-- **Search**: `docs/screenshots/search.png`
+| Feature | Screenshot |
+|---|---|
+| Auth: Login | [login.png](docs/screenshots/login.png) |
+| Auth: Register | [register.png](docs/screenshots/register.png) |
+| My Lists (incl. virtual “Assigned to me”) | [lists.png](docs/screenshots/lists.png) |
+| Tasks in a List (status colors) | [tasks.png](docs/screenshots/tasks.png) |
+| Assign by email (creator flow) | [assign-by-email.png](docs/screenshots/assign-by-email.png) |
+| Virtual list: Assigned to me (assignee flow) | [assigned-virtual-list.png](docs/screenshots/assigned-virtual-list.png) |
+| My Tasks (assigned) | [assigned-tasks.png](docs/screenshots/assigned-tasks.png) |
+| Assignee can edit status only | [assignee-status-only.png](docs/screenshots/assignee-status-only.png) |
+| Task details (assignee + final status) | [task-details.png](docs/screenshots/task-details.png) |
+| Search | [search.png](docs/screenshots/search.png) |
+
+Tip: once the images exist, GitHub will show a preview when you open the link.
 
 ## Demo scenario (recommended)
 
