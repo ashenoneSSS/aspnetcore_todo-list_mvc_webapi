@@ -65,22 +65,6 @@ Add screenshots to `docs/screenshots/` using the filenames below — they will r
 |---|---|
 | ![Task details](docs/screenshots/task-details.png) | ![Search](docs/screenshots/search.png) |
 
-### Files (for convenience)
-
-| Feature | Screenshot |
-|---|---|
-| Auth: Login | [login.png](docs/screenshots/login.png) |
-| Auth: Register | [register.png](docs/screenshots/register.png) |
-| My Lists (incl. virtual “Assigned to me”) | [lists.png](docs/screenshots/lists.png) |
-| Tasks in a List (status colors) | [tasks.png](docs/screenshots/tasks.png) |
-| Assign by email (creator flow) | [assign-by-email.png](docs/screenshots/assign-by-email.png) |
-| Virtual list: Assigned to me (assignee flow) | [assigned-virtual-list.png](docs/screenshots/assigned-virtual-list.png) |
-| My Tasks (assigned) | [assigned-tasks.png](docs/screenshots/assigned-tasks.png) |
-| Assignee can edit status only | [assignee-status-only.png](docs/screenshots/assignee-status-only.png) |
-| Task details (assignee + final status) | [task-details.png](docs/screenshots/task-details.png) |
-| Search | [search.png](docs/screenshots/search.png) |
-
-Tip: if an image does not show up, double-check the exact filename and that it lives in `docs/screenshots/`.
 
 ## Demo scenario (recommended)
 
