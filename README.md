@@ -1,69 +1,74 @@
 # ASP.NET Core Todo List (MVC + Web API)
 
-Full-stack ASP.NET Core todo list application with a Razor MVC web UI and a RESTful Web API backend. It uses EF Core with SQLite for persistence, ASP.NET Core Identity for authentication, and supports CRUD for lists and tasks, task assignment, search by multiple criteria, and tag-based organization.
+Full-stack ASP.NET Core todo list application with a Razor MVC web UI and a RESTful Web API backend. It uses EF Core with SQLite for persistence, ASP.NET Core Identity for user authentication, and supports CRUD for lists and tasks, assignment by email, task search, and an “Assigned to me” virtual list.
 
 ## Key features
 
-- **Authentication**: user registration/login/logout (ASP.NET Core Identity)
+- **Authentication (WebApp)**: user registration/login/logout (ASP.NET Core Identity + cookies)
 - **Todo lists**: create, edit, delete, view your lists
 - **Tasks**: create, edit, delete, view details; due dates and status
-- **Assigned tasks**: view tasks assigned to you, filter and sort, change status
+- **Assignment by email**: creator can assign/reassign tasks by assignee email (mapped to user GUID in `users.db`)
+- **Permissions model**:
+  - **Creator** can edit all task fields and reassign
+  - **Assignee** can update **status only**
+- **Assigned tasks**:
+  - “My Tasks” page shows tasks assigned to you
+  - “My Lists” includes a **virtual list** **Assigned to me** (no DB record)
 - **Search**: find tasks by title and date ranges (created/due)
-- **Tags**: browse all tags, view tasks by tag, tags visible on task details
 
 ## Tech stack
 
-- **.NET**: ASP.NET Core (.NET 6)
+- **.NET**: ASP.NET Core (.NET 8)
 - **UI**: Razor Views (MVC) + Bootstrap 5
 - **API**: ASP.NET Core Web API
 - **Data**: Entity Framework Core + SQLite
-- **Auth**: ASP.NET Core Identity (WebApp) + API key (WebApi)
+- **Auth**:
+  - WebApp: ASP.NET Core Identity (cookies)
+  - WebApi: API key (`Authorization: Bearer <key>`)
 
 ## Architecture overview
 
 This solution contains two applications:
 
 - **`TodoListApp.WebApp`**: MVC web application (browser UI) + Identity user store (`users.db`)
-- **`TodoListApp.WebApi`**: REST API backend + domain data store for lists/tasks/tags (`todolist.db`)
+- **`TodoListApp.WebApi`**: REST API backend + domain data store for lists/tasks (`todolist.db`)
 
 The WebApp communicates with the WebApi via typed `HttpClient` services and sends an API key in the `Authorization: Bearer <key>` header.
 
-## Screenshots
+## Screenshots (add yours here)
 
-Place your screenshots under:
+Put screenshots into `docs/screenshots/` and link them here:
 
-- **`docs/screenshots/`**
+- **Login**: `docs/screenshots/login.png`
+- **Register**: `docs/screenshots/register.png`
+- **My Lists**: `docs/screenshots/lists.png`
+- **Tasks in a List (status colors)**: `docs/screenshots/tasks.png`
+- **Assign by email**: `docs/screenshots/assign-by-email.png`
+- **Virtual list: Assigned to me**: `docs/screenshots/assigned-virtual-list.png`
+- **My Tasks (assigned)**: `docs/screenshots/assigned-tasks.png`
+- **Assignee can edit status only**: `docs/screenshots/assignee-status-only.png`
+- **Task details**: `docs/screenshots/task-details.png`
+- **Search**: `docs/screenshots/search.png`
 
-Then update the links below (replace `TODO:` with real filenames you add):
+## Demo scenario (recommended)
 
-- **Login / Register**: `docs/screenshots/TODO-login.png`, `docs/screenshots/TODO-register.png`
-- **My Lists**: `docs/screenshots/TODO-lists.png`
-- **Tasks in a List**: `docs/screenshots/TODO-tasks.png`
-- **Task Details (with tags)**: `docs/screenshots/TODO-task-details.png`
-- **Assigned Tasks**: `docs/screenshots/TODO-assigned-tasks.png`
-- **Search**: `docs/screenshots/TODO-search.png`
-- **Tags**: `docs/screenshots/TODO-tags.png`, `docs/screenshots/TODO-tasks-by-tag.png`
+To generate a clean, recruiter-friendly dataset and screenshots, follow:
+
+- `docs/demo-script.md`
 
 ## How to run locally
 
 ### Prerequisites
 
-- .NET SDK 6
+- .NET SDK 8
 
 ### 1) Run the Web API
 
-- Start **`TodoListApp.WebApi`** (it runs on `https://localhost:7001` by default).
+Start **`TodoListApp.WebApi`** (default: `https://localhost:7001`).
 
 ### 2) Run the Web App
 
-- Start **`TodoListApp.WebApp`** and open the URL shown in the console.
-
-### 3) First-time database setup
-
-This repo contains EF Core migrations for both applications. If the databases are not created yet, apply migrations:
-
-- WebApi migrations create `todolist.db`
-- WebApp migrations create `users.db`
+Start **`TodoListApp.WebApp`** and open the URL shown in the console (default: `https://localhost:7262`).
 
 ## Configuration
 
@@ -79,7 +84,8 @@ This repo contains EF Core migrations for both applications. If the databases ar
 ## Project structure
 
 ```
-TodoListApp.WebApp/   # MVC UI + Identity (users.db)
-TodoListApp.WebApi/   # REST API + EF Core (todolist.db)
-docs/screenshots/     # screenshots for README
+TodoListApp.WebApp/        # MVC UI + Identity (users.db)
+TodoListApp.WebApi/        # REST API + EF Core (todolist.db)
+docs/                      # documentation assets
+docs/screenshots/          # screenshots referenced by README
 ```
