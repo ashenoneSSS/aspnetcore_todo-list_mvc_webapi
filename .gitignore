@@ -40,6 +40,17 @@ bld/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
+# Cursor / IDE agent artifacts
+.cursor/
+
+# Project requirement docs (keep local, don't publish)
+/delivery-plan.md
+/functional-requirements.md
+/project-evaluation.md
+/software-architecture.md
+/solution-requirements.md
+/user-stories.md
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
