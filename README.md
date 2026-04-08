@@ -37,7 +37,35 @@ The WebApp communicates with the WebApi via typed `HttpClient` services and send
 
 ## Screenshots (add yours here)
 
-Add screenshots to `docs/screenshots/` and update/replace the files below.
+Add screenshots to `docs/screenshots/` using the filenames below — they will render directly in this README.
+
+### Core flow
+
+| Login | Register |
+|---|---|
+| ![Login](docs/screenshots/login.png) | ![Register](docs/screenshots/register.png) |
+
+| My Lists (incl. virtual “Assigned to me”) | Tasks in a List (status colors) |
+|---|---|
+| ![My Lists](docs/screenshots/lists.png) | ![Tasks](docs/screenshots/tasks.png) |
+
+### Assignment & permissions
+
+| Assign by email (creator flow) | Assignee can edit status only |
+|---|---|
+| ![Assign by email](docs/screenshots/assign-by-email.png) | ![Assignee status only](docs/screenshots/assignee-status-only.png) |
+
+| Virtual list: Assigned to me | My Tasks (assigned) |
+|---|---|
+| ![Assigned virtual list](docs/screenshots/assigned-virtual-list.png) | ![Assigned tasks](docs/screenshots/assigned-tasks.png) |
+
+### Details & search
+
+| Task details | Search |
+|---|---|
+| ![Task details](docs/screenshots/task-details.png) | ![Search](docs/screenshots/search.png) |
+
+### Files (for convenience)
 
 | Feature | Screenshot |
 |---|---|
@@ -52,7 +80,7 @@ Add screenshots to `docs/screenshots/` and update/replace the files below.
 | Task details (assignee + final status) | [task-details.png](docs/screenshots/task-details.png) |
 | Search | [search.png](docs/screenshots/search.png) |
 
-Tip: once the images exist, GitHub will show a preview when you open the link.
+Tip: if an image does not show up, double-check the exact filename and that it lives in `docs/screenshots/`.
 
 ## Demo scenario (recommended)
 
