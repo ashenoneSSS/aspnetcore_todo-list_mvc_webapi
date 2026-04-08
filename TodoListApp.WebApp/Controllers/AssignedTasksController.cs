@@ -32,7 +32,9 @@ public class AssignedTasksController : Controller
     public async Task<IActionResult> Index(string? statusFilter, string? sortBy)
     {
         var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var items = (await this.todoItemService.GetAssignedToUserAsync(userId)).ToList();
+        var items = (await this.todoItemService.GetAssignedToUserAsync(userId))
+            .Where(i => !string.Equals(i.CreatorId, userId, StringComparison.Ordinal))
+            .ToList();
 
         if (!string.IsNullOrWhiteSpace(statusFilter) && int.TryParse(statusFilter, out int status))
         {
