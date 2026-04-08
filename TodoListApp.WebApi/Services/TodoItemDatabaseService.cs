@@ -28,7 +28,6 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         var skip = (page - 1) * pageSize;
 
         var entities = await this.context.TodoItems
-            .Include(i => i.Tags)
             .Where(i => i.TodoListId == listId)
             .OrderBy(i => i.CreatedDate)
             .Skip(skip)
@@ -42,7 +41,6 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     public async Task<TodoItemModel?> GetByIdAsync(int id)
     {
         var entity = await this.context.TodoItems
-            .Include(i => i.Tags)
             .FirstOrDefaultAsync(i => i.Id == id);
         return entity == null ? null : MapToModel(entity);
     }
@@ -51,7 +49,6 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
     public async Task<IEnumerable<TodoItemModel>> GetAssignedToUserAsync(string userId)
     {
         var entities = await this.context.TodoItems
-            .Include(i => i.Tags)
             .Where(i => i.AssigneeId == userId)
             .OrderBy(i => i.DueDate)
             .ThenBy(i => i.Title)
@@ -105,7 +102,6 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
 
         var skip = (Math.Max(1, page) - 1) * Math.Clamp(pageSize, 1, 100);
         var entities = await query
-            .Include(i => i.Tags)
             .OrderBy(i => i.DueDate)
             .ThenBy(i => i.Title)
             .Skip(skip)
@@ -149,9 +145,9 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
             CreatedDate = entity.CreatedDate,
             DueDate = entity.DueDate,
             Status = entity.Status,
+            CreatorId = entity.CreatorId,
             AssigneeId = entity.AssigneeId,
             TodoListId = entity.TodoListId,
-            Tags = entity.Tags?.Select(t => new TagModel { Id = t.Id, Name = t.Name }).ToList() ?? new List<TagModel>(),
         };
     }
 
@@ -160,10 +156,11 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         var entity = new TodoItemEntity
         {
             Title = model.Title,
-            Description = model.Description,
+            Description = model.Description ?? string.Empty,
             CreatedDate = model.CreatedDate,
             DueDate = model.DueDate,
             Status = model.Status,
+            CreatorId = model.CreatorId,
             AssigneeId = model.AssigneeId,
             TodoListId = model.TodoListId,
         };
@@ -180,9 +177,10 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
             ?? throw new NotFoundException($"Todo item with id {model.Id} not found.");
 
         entity.Title = model.Title;
-        entity.Description = model.Description;
+        entity.Description = model.Description ?? string.Empty;
         entity.DueDate = model.DueDate;
         entity.Status = model.Status;
+        entity.CreatorId = model.CreatorId;
         entity.AssigneeId = model.AssigneeId;
 
         await this.context.SaveChangesAsync();

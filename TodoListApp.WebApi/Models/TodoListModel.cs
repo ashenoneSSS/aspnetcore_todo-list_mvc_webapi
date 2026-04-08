@@ -24,7 +24,7 @@ public sealed class TodoListModel
     /// Gets or sets the list description.
     /// </summary>
     [StringLength(2000)]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the user identifier who owns the list.

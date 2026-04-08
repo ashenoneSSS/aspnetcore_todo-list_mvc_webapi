@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace TodoListApp.WebApp.Models;
 
@@ -23,7 +24,7 @@ public class TodoItemWebApiModel
     /// Gets or sets the item description.
     /// </summary>
     [StringLength(2000)]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the creation date.
@@ -42,9 +43,21 @@ public class TodoItemWebApiModel
     public int Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the creator user identifier.
+    /// </summary>
+    public string CreatorId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the assignee user identifier.
     /// </summary>
     public string AssigneeId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the assignee email (WebApp-only input).
+    /// </summary>
+    [EmailAddress(ErrorMessage = "Assignee email is not a valid email address")]
+    [JsonIgnore]
+    public string? AssigneeEmail { get; set; }
 
     /// <summary>
     /// Gets or sets the parent todo list identifier.
@@ -56,25 +69,4 @@ public class TodoItemWebApiModel
     /// Gets a value indicating whether the task is overdue.
     /// </summary>
     public bool IsOverdue => this.DueDate.HasValue && this.DueDate.Value < DateTime.Now && this.Status != 2;
-
-    /// <summary>
-    /// Gets or sets the tags on this task.
-    /// </summary>
-    public IList<TagWebApiModel> Tags { get; set; } = new List<TagWebApiModel>();
-}
-
-/// <summary>
-/// Web API model for a tag.
-/// </summary>
-public class TagWebApiModel
-{
-    /// <summary>
-    /// Gets or sets the tag id.
-    /// </summary>
-    public int Id { get; set; }
-
-    /// <summary>
-    /// Gets or sets the tag name.
-    /// </summary>
-    public string Name { get; set; } = string.Empty;
 }

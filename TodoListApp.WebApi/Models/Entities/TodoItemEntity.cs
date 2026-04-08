@@ -36,6 +36,11 @@ public sealed class TodoItemEntity
     public TaskItemStatus Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the creator user identifier.
+    /// </summary>
+    public string CreatorId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the assignee user identifier.
     /// </summary>
     public string AssigneeId { get; set; } = string.Empty;
@@ -49,9 +54,4 @@ public sealed class TodoItemEntity
     /// Gets or sets the navigation property for the parent todo list.
     /// </summary>
     public TodoListEntity TodoList { get; set; } = null!;
-
-    /// <summary>
-    /// Gets the navigation property for tags on this item.
-    /// </summary>
-    public ICollection<TagEntity> Tags { get; } = new List<TagEntity>();
 }

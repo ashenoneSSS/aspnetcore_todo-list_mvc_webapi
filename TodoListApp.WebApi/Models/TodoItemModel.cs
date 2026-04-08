@@ -24,7 +24,7 @@ public sealed class TodoItemModel
     /// Gets or sets the item description.
     /// </summary>
     [StringLength(2000)]
-    public string Description { get; set; } = string.Empty;
+    public string? Description { get; set; }
 
     /// <summary>
     /// Gets or sets the creation date.
@@ -42,6 +42,13 @@ public sealed class TodoItemModel
     public TaskItemStatus Status { get; set; }
 
     /// <summary>
+    /// Gets or sets the creator user identifier.
+    /// </summary>
+    [Required]
+    [StringLength(450, MinimumLength = 1)]
+    public string CreatorId { get; set; } = string.Empty;
+
+    /// <summary>
     /// Gets or sets the assignee user identifier.
     /// </summary>
     [Required]
@@ -57,5 +64,5 @@ public sealed class TodoItemModel
     /// <summary>
     /// Gets or sets the tags on this task.
     /// </summary>
-    public IList<TagModel> Tags { get; set; } = new List<TagModel>();
+    // Tags removed (simplified app).
 }

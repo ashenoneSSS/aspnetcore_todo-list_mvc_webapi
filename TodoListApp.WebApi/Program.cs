@@ -15,7 +15,6 @@ builder.Services.AddDbContext<TodoListDbContext>(options =>
 
 builder.Services.AddScoped<ITodoListDatabaseService, TodoListDatabaseService>();
 builder.Services.AddScoped<ITodoItemDatabaseService, TodoItemDatabaseService>();
-builder.Services.AddScoped<ITagDatabaseService, TagDatabaseService>();
 
 builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
@@ -26,6 +25,13 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+// Keep local dev DB schema in sync with the code.
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TodoListDbContext>();
+    db.Database.Migrate();
 }
 
 app.UseHttpsRedirection();

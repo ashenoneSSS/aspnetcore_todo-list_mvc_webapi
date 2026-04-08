@@ -32,7 +32,18 @@ public class TodoListController : Controller
     {
         var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
         var lists = await this.todoListService.GetAllAsync(userId);
-        return this.View(lists.ToList());
+        var result = lists.ToList();
+
+        // Virtual list for tasks assigned to the current user.
+        result.Insert(0, new TodoListWebApiModel
+        {
+            Id = -1,
+            Title = "Assigned to me",
+            Description = "Tasks assigned to you (virtual list).",
+            UserId = userId,
+        });
+
+        return this.View(result);
     }
 
     /// <summary>

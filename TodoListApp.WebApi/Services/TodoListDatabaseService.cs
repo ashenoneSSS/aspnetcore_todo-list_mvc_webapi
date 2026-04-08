@@ -81,7 +81,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         var entity = new TodoListEntity
         {
             Title = model.Title,
-            Description = model.Description,
+            Description = model.Description ?? string.Empty,
             UserId = model.UserId,
             CreatedDate = model.CreatedDate,
         };
@@ -98,7 +98,7 @@ public class TodoListDatabaseService : ITodoListDatabaseService
             ?? throw new NotFoundException($"Todo list with id {model.Id} not found.");
 
         entity.Title = model.Title;
-        entity.Description = model.Description;
+        entity.Description = model.Description ?? string.Empty;
 
         await this.context.SaveChangesAsync();
     }

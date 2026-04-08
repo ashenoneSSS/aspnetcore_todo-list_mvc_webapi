@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Services;
@@ -14,6 +15,7 @@ public class TodoItemController : Controller
 {
     private readonly ITodoItemWebApiService todoItemService;
     private readonly ITodoListWebApiService todoListService;
+    private readonly UserManager<ApplicationUser> userManager;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TodoItemController"/> class.
@@ -22,10 +24,12 @@ public class TodoItemController : Controller
     /// <param name="todoListService">The todo list Web API service.</param>
     public TodoItemController(
         ITodoItemWebApiService todoItemService,
-        ITodoListWebApiService todoListService)
+        ITodoListWebApiService todoListService,
+        UserManager<ApplicationUser> userManager)
     {
         this.todoItemService = todoItemService;
         this.todoListService = todoListService;
+        this.userManager = userManager;
     }
 
     /// <summary>
@@ -39,6 +43,12 @@ public class TodoItemController : Controller
         if (list == null)
         {
             return this.NotFound();
+        }
+
+        var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        if (!string.Equals(list.UserId, currentUserId, StringComparison.Ordinal))
+        {
+            return this.Forbid();
         }
 
         this.ViewData["TodoList"] = list;
@@ -58,12 +68,19 @@ public class TodoItemController : Controller
             return this.NotFound();
         }
 
+        var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        if (!string.Equals(list.UserId, currentUserId, StringComparison.Ordinal))
+        {
+            return this.Forbid();
+        }
+
         this.ViewData["TodoList"] = list;
         var model = new TodoItemWebApiModel
         {
             TodoListId = listId,
             Status = -1,
-            AssigneeId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty,
+            CreatorId = currentUserId,
+            AssigneeId = currentUserId,
         };
         return this.View(model);
     }
@@ -83,7 +100,31 @@ public class TodoItemController : Controller
     /// Displays the edit form.
     /// </summary>
     [HttpGet]
-    public Task<IActionResult> Edit(int id) => this.ShowItemViewAsync(id, "Edit");
+    public async Task<IActionResult> Edit(int id)
+    {
+        var (item, list) = await this.GetItemWithListAsync(id);
+        if (item == null)
+        {
+            return this.NotFound();
+        }
+
+        var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+        this.ViewData["TodoList"] = list;
+
+        if (item.CreatorId == currentUserId)
+        {
+            var assignee = await this.userManager.FindByIdAsync(item.AssigneeId);
+            item.AssigneeEmail = assignee?.Email ?? string.Empty;
+            return this.View("Edit", item);
+        }
+
+        if (item.AssigneeId == currentUserId)
+        {
+            return this.View("EditStatus", item);
+        }
+
+        return this.Forbid();
+    }
 
     /// <summary>
     /// Handles edit form submission.
@@ -125,9 +166,25 @@ public class TodoItemController : Controller
         if (this.ModelState.IsValid)
         {
             model.CreatedDate = DateTime.UtcNow;
-            if (string.IsNullOrEmpty(model.AssigneeId))
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            model.CreatorId = currentUserId;
+
+            if (!string.IsNullOrWhiteSpace(model.AssigneeEmail))
             {
-                model.AssigneeId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+                var assignee = await this.userManager.FindByEmailAsync(model.AssigneeEmail.Trim());
+                if (assignee == null)
+                {
+                    this.ModelState.AddModelError(nameof(model.AssigneeEmail), "User with this email was not found.");
+                    var listInvalid = await this.todoListService.GetByIdAsync(model.TodoListId);
+                    this.ViewData["TodoList"] = listInvalid;
+                    return this.View(model);
+                }
+
+                model.AssigneeId = assignee.Id;
+            }
+            else
+            {
+                model.AssigneeId = currentUserId;
             }
 
             await this.todoItemService.CreateAsync(model);
@@ -148,8 +205,47 @@ public class TodoItemController : Controller
 
         if (this.ModelState.IsValid)
         {
-            await this.todoItemService.UpdateAsync(model);
-            return this.RedirectToAction(nameof(this.Index), new { listId = model.TodoListId });
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
+            var existing = await this.todoItemService.GetByIdAsync(id);
+            if (existing == null)
+            {
+                return this.NotFound();
+            }
+
+            // Creator can edit everything (and reassign). Assignee can only change Status.
+            if (existing.CreatorId == currentUserId)
+            {
+                if (!string.IsNullOrWhiteSpace(model.AssigneeEmail))
+                {
+                    var assignee = await this.userManager.FindByEmailAsync(model.AssigneeEmail.Trim());
+                    if (assignee == null)
+                    {
+                        this.ModelState.AddModelError(nameof(model.AssigneeEmail), "User with this email was not found.");
+                        var listInvalid = await this.todoListService.GetByIdAsync(model.TodoListId);
+                        this.ViewData["TodoList"] = listInvalid;
+                        return this.View(model);
+                    }
+
+                    model.AssigneeId = assignee.Id;
+                }
+                else
+                {
+                    model.AssigneeId = existing.AssigneeId;
+                }
+
+                model.CreatorId = existing.CreatorId;
+                await this.todoItemService.UpdateAsync(model);
+                return this.RedirectToAction(nameof(this.Index), new { listId = model.TodoListId });
+            }
+
+            if (existing.AssigneeId == currentUserId)
+            {
+                existing.Status = model.Status;
+                await this.todoItemService.UpdateAsync(existing);
+                return this.RedirectToAction("Index", "AssignedTasks");
+            }
+
+            return this.Forbid();
         }
 
         var list = await this.todoListService.GetByIdAsync(model.TodoListId);
@@ -166,6 +262,12 @@ public class TodoItemController : Controller
         }
 
         var list = await this.todoListService.GetByIdAsync(item.TodoListId);
+        if (string.IsNullOrEmpty(item.CreatorId) && list != null)
+        {
+            // Backward-compat for items created before CreatorId existed.
+            item.CreatorId = list.UserId;
+        }
+
         return (item, list);
     }
 
@@ -178,6 +280,8 @@ public class TodoItemController : Controller
         }
 
         this.ViewData["TodoList"] = list;
+        var assignee = await this.userManager.FindByIdAsync(item.AssigneeId);
+        this.ViewData["AssigneeEmail"] = assignee?.Email ?? item.AssigneeId;
         return this.View(viewName, item);
     }
 }

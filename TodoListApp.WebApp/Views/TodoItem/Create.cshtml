@@ -19,6 +19,11 @@
         <textarea asp-for="Description" id="@Html.IdFor(m => m.Description)" class="form-control" rows="3"></textarea>
     </div>
     <div class="mb-3">
+        <label asp-for="AssigneeEmail" class="form-label" for="@Html.IdFor(m => m.AssigneeEmail)">Assign to (email, optional)</label>
+        <input asp-for="AssigneeEmail" id="@Html.IdFor(m => m.AssigneeEmail)" class="form-control" />
+        <span asp-validation-for="AssigneeEmail" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
         <label asp-for="DueDate" class="form-label" for="@Html.IdFor(m => m.DueDate)">Due Date</label>
         <input asp-for="DueDate" id="@Html.IdFor(m => m.DueDate)" type="date" class="form-control" />
     </div>
