@@ -6,12 +6,8 @@ using TodoListApp.WebApp.Exceptions;
 
 namespace TodoListApp.WebApp.Filters;
 
-/// <summary>
-/// Handles <see cref="ApiUnavailableException"/> and returns a friendly view.
-/// </summary>
 public class ApiUnavailableExceptionFilter : IExceptionFilter
 {
-    /// <inheritdoc />
     public void OnException(ExceptionContext context)
     {
         ArgumentNullException.ThrowIfNull(context);

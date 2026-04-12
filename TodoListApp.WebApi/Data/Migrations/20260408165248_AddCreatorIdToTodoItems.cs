@@ -4,10 +4,8 @@
 
 namespace TodoListApp.WebApi.Data.Migrations
 {
-    /// <inheritdoc />
     public partial class AddCreatorIdToTodoItems : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -24,7 +22,6 @@ namespace TodoListApp.WebApi.Data.Migrations
                 defaultValue: "");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

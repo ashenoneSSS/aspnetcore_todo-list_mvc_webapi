@@ -2,29 +2,17 @@ using System.Security.Claims;
 
 namespace TodoListApp.WebApi.Middleware;
 
-/// <summary>
-/// Middleware for API key Bearer authentication.
-/// </summary>
 public sealed class ApiKeyAuthMiddleware
 {
     private const string AuthorizationHeader = "Authorization";
     private const string BearerPrefix = "Bearer ";
     private readonly RequestDelegate next;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ApiKeyAuthMiddleware"/> class.
-    /// </summary>
-    /// <param name="next">The next middleware in the pipeline.</param>
     public ApiKeyAuthMiddleware(RequestDelegate next)
     {
         this.next = next;
     }
 
-    /// <summary>
-    /// Invokes the middleware.
-    /// </summary>
-    /// <param name="context">The HTTP context.</param>
-    /// <param name="configuration">The configuration.</param>
     public Task InvokeAsync(HttpContext context, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(context);

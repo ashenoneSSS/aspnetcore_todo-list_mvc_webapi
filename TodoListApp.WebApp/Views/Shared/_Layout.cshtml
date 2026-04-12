@@ -21,10 +21,10 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="TodoList" asp-action="Index">My Lists</a>
+                                <a class="nav-link text-dark" asp-controller="TodoList" asp-action="Index">My lists</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="AssignedTasks" asp-action="Index">My Tasks</a>
+                                <a class="nav-link text-dark" asp-controller="Tasks" asp-action="Index">Tasks</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Search" asp-action="Index">Search</a>
@@ -63,7 +63,7 @@
             @RenderBody()
         </main>
     </div>
-    <footer class="border-top footer text-muted">
+    <footer class="border-top footer">
         <div class="container">
             &copy; 2026 - TodoListApp
         </div>

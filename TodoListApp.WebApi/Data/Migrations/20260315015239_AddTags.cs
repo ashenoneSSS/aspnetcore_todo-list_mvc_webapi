@@ -4,10 +4,8 @@
 
 namespace TodoListApp.WebApi.Data.Migrations
 {
-    /// <inheritdoc />
     public partial class AddTags : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -53,7 +51,6 @@ namespace TodoListApp.WebApi.Data.Migrations
                 column: "TodoItemId");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

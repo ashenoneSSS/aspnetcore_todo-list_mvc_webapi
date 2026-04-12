@@ -6,27 +6,16 @@ using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
 
-/// <summary>
-/// MVC controller for todo list operations.
-/// </summary>
 [Authorize]
 public class TodoListController : Controller
 {
     private readonly ITodoListWebApiService todoListService;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TodoListController"/> class.
-    /// </summary>
-    /// <param name="todoListService">The todo list Web API service.</param>
     public TodoListController(ITodoListWebApiService todoListService)
     {
         this.todoListService = todoListService;
     }
 
-    /// <summary>
-    /// Displays the list of user's todo lists.
-    /// </summary>
-    /// <returns>The index view.</returns>
     [HttpGet]
     public async Task<IActionResult> Index()
     {
@@ -46,18 +35,12 @@ public class TodoListController : Controller
         return this.View(result);
     }
 
-    /// <summary>
-    /// Displays the create form.
-    /// </summary>
     [HttpGet]
     public IActionResult Create()
     {
         return this.View(new TodoListWebApiModel());
     }
 
-    /// <summary>
-    /// Handles create form submission.
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Create(TodoListWebApiModel model)
@@ -66,15 +49,9 @@ public class TodoListController : Controller
         return this.CreateCoreAsync(model);
     }
 
-    /// <summary>
-    /// Displays the edit form.
-    /// </summary>
     [HttpGet]
     public Task<IActionResult> Edit(int id) => this.ShowListViewAsync(id, "Edit");
 
-    /// <summary>
-    /// Handles edit form submission.
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Edit(int id, TodoListWebApiModel model)
@@ -83,15 +60,9 @@ public class TodoListController : Controller
         return this.EditCoreAsync(id, model);
     }
 
-    /// <summary>
-    /// Displays the delete confirmation page.
-    /// </summary>
     [HttpGet]
     public Task<IActionResult> Delete(int id) => this.ShowListViewAsync(id, "Delete");
 
-    /// <summary>
-    /// Handles delete confirmation.
-    /// </summary>
     [HttpPost]
     [ActionName("Delete")]
     [ValidateAntiForgeryToken]

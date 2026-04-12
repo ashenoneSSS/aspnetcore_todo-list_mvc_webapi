@@ -14,7 +14,6 @@ namespace TodoListApp.WebApi.Data.Migrations
     [Migration("20260408165248_AddCreatorIdToTodoItems")]
     partial class AddCreatorIdToTodoItems
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

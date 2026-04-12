@@ -1,0 +1,71 @@
+@model IList<TodoListApp.WebApp.Models.TodoItemWebApiModel>
+@{
+    ViewData["Title"] = "Tasks";
+    var statusFilter = ViewData["StatusFilter"] as string ?? string.Empty;
+    var sortBy = ViewData["SortBy"] as string ?? "duedate";
+}
+
+<h2>Tasks</h2>
+
+<p class="text-muted">All tasks from your lists and tasks assigned to you.</p>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" class="d-inline-flex gap-2">
+            <label for="statusFilter" class="col-form-label">Filter by status:</label>
+            <select id="statusFilter" name="statusFilter" class="form-select form-select-sm" style="width: auto;" onchange="this.form.submit()">
+                <option value="" selected="@(statusFilter == "")">All</option>
+                <option value="0" selected="@(statusFilter == "0")">Not Started</option>
+                <option value="1" selected="@(statusFilter == "1")">In Progress</option>
+                <option value="2" selected="@(statusFilter == "2")">Completed</option>
+            </select>
+            <input type="hidden" name="sortBy" value="@sortBy" />
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th><a asp-action="Index" asp-route-statusFilter="@statusFilter" asp-route-sortBy="title">Title</a></th>
+            <th><a asp-action="Index" asp-route-statusFilter="@statusFilter" asp-route-sortBy="duedate">Due Date</a></th>
+            <th>Status</th>
+            <th>Change Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var statusClass = item.Status switch
+            {
+                0 => "task-status-notstarted",
+                1 => "task-status-inprogress",
+                _ => "task-status-completed",
+            };
+            var rowClass = item.IsOverdue && item.Status != 2
+                ? $"{statusClass} task-status-overdue"
+                : statusClass;
+
+            <tr class="@rowClass">
+                <td>@item.Title</td>
+                <td>@(item.DueDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                <td>@(item.Status switch { 0 => "Not Started", 1 => "In Progress", _ => "Completed" })</td>
+                <td>
+                    <form asp-action="ChangeStatus" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="taskId" value="@item.Id" />
+                        <select name="newStatus" class="form-select form-select-sm" style="width: auto; display: inline-block;" onchange="this.form.submit()">
+                            <option value="0" selected="@(item.Status == 0)">Not Started</option>
+                            <option value="1" selected="@(item.Status == 1)">In Progress</option>
+                            <option value="2" selected="@(item.Status == 2)">Completed</option>
+                        </select>
+                    </form>
+                </td>
+                <td>
+                    <a asp-controller="TodoItem" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

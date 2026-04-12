@@ -5,9 +5,6 @@ using TodoListApp.WebApp.Models;
 
 namespace TodoListApp.WebApp.Services;
 
-/// <summary>
-/// Web API service implementation for todo items.
-/// </summary>
 public class TodoItemWebApiService : ITodoItemWebApiService
 {
     private static readonly JsonSerializerOptions JsonOptions = new ()
@@ -17,11 +14,6 @@ public class TodoItemWebApiService : ITodoItemWebApiService
 
     private readonly HttpClient httpClient;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TodoItemWebApiService"/> class.
-    /// </summary>
-    /// <param name="httpClient">The HTTP client.</param>
-    /// <param name="configuration">The configuration.</param>
     public TodoItemWebApiService(HttpClient httpClient, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
@@ -38,7 +30,6 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         this.httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
     }
 
-    /// <inheritdoc />
     public async Task<IEnumerable<TodoItemWebApiModel>> GetByListIdAsync(int listId, int page = 1, int pageSize = 10)
     {
         var uri = new Uri(
@@ -50,7 +41,6 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         return result ?? Enumerable.Empty<TodoItemWebApiModel>();
     }
 
-    /// <inheritdoc />
     public async Task<TodoItemWebApiModel?> GetByIdAsync(int id)
     {
         var uri = new Uri(this.httpClient.BaseAddress!, $"api/todoitem/{id}");
@@ -64,7 +54,6 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         return await response.Content.ReadFromJsonAsync<TodoItemWebApiModel>(JsonOptions);
     }
 
-    /// <inheritdoc />
     public async Task<IEnumerable<TodoItemWebApiModel>> GetAssignedToUserAsync(string userId)
     {
         var uri = new Uri(
@@ -76,7 +65,17 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         return result ?? Enumerable.Empty<TodoItemWebApiModel>();
     }
 
-    /// <inheritdoc />
+    public async Task<IEnumerable<TodoItemWebApiModel>> GetAllForUserAsync(string userId)
+    {
+        var uri = new Uri(
+            this.httpClient.BaseAddress!,
+            $"api/todoitem/mine?userId={Uri.EscapeDataString(userId)}");
+        var response = await SendAsync(() => this.httpClient.GetAsync(uri));
+        _ = response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<IEnumerable<TodoItemWebApiModel>>(JsonOptions);
+        return result ?? Enumerable.Empty<TodoItemWebApiModel>();
+    }
+
     public async Task<IEnumerable<TodoItemWebApiModel>> SearchAsync(
         string userId,
         string? title,
@@ -122,21 +121,18 @@ public class TodoItemWebApiService : ITodoItemWebApiService
         return result ?? Enumerable.Empty<TodoItemWebApiModel>();
     }
 
-    /// <inheritdoc />
     public Task CreateAsync(TodoItemWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.CreateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public Task UpdateAsync(TodoItemWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.UpdateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public Task DeleteAsync(int id)
     {
         return this.DeleteCoreAsync(id);

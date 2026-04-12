@@ -5,19 +5,11 @@ using TodoListApp.WebApp.Models;
 
 namespace TodoListApp.WebApp.Controllers;
 
-/// <summary>
-/// Controller for user account operations (register, login, logout).
-/// </summary>
 public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> userManager;
     private readonly SignInManager<ApplicationUser> signInManager;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AccountController"/> class.
-    /// </summary>
-    /// <param name="userManager">The user manager.</param>
-    /// <param name="signInManager">The sign-in manager.</param>
     public AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager)
@@ -26,21 +18,12 @@ public class AccountController : Controller
         this.signInManager = signInManager;
     }
 
-    /// <summary>
-    /// Displays the registration form.
-    /// </summary>
-    /// <returns>The register view.</returns>
     [HttpGet]
     public IActionResult Register()
     {
         return this.View(new RegisterViewModel());
     }
 
-    /// <summary>
-    /// Handles registration form submission.
-    /// </summary>
-    /// <param name="model">The registration view model.</param>
-    /// <returns>Redirect to TodoList/Index on success, or view with errors.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Register(RegisterViewModel model)
@@ -49,21 +32,12 @@ public class AccountController : Controller
         return this.RegisterCoreAsync(model);
     }
 
-    /// <summary>
-    /// Displays the login form.
-    /// </summary>
-    /// <returns>The login view.</returns>
     [HttpGet]
     public IActionResult Login()
     {
         return this.View(new LoginViewModel());
     }
 
-    /// <summary>
-    /// Handles login form submission.
-    /// </summary>
-    /// <param name="model">The login view model.</param>
-    /// <returns>Redirect to TodoList/Index on success, or view with errors.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Login(LoginViewModel model)
@@ -72,10 +46,6 @@ public class AccountController : Controller
         return this.LoginCoreAsync(model);
     }
 
-    /// <summary>
-    /// Signs out the current user.
-    /// </summary>
-    /// <returns>Redirect to Login.</returns>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()

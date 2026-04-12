@@ -10,7 +10,8 @@
   --accent-amber: #f59e0b;
   --accent-rose: #f43f5e;
   --text-primary: #f1f5f9;
-  --text-muted: #94a3b8;
+  /* Readable on dark bg (Bootstrap default .text-muted was too low-contrast) */
+  --text-muted: #cbd5e1;
   --border-color: #475569;
   --overdue: #f87171;
 }
@@ -228,9 +229,14 @@ dl.row dd {
 .footer {
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
-  color: var(--text-muted);
+  color: #e2e8f0;
   padding: 1.5rem 0;
   margin-top: auto; /* stick footer to bottom on short pages */
+}
+
+/* Bootstrap utility: keep helper text readable on dark theme */
+.text-muted {
+  color: var(--text-muted) !important;
 }
 
 /* Empty-state messages (higher contrast than text-muted) */

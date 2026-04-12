@@ -6,23 +6,15 @@ using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.WebApi.Services;
 
-/// <summary>
-/// Database service implementation for todo list operations.
-/// </summary>
 public class TodoListDatabaseService : ITodoListDatabaseService
 {
     private readonly TodoListDbContext context;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TodoListDatabaseService"/> class.
-    /// </summary>
-    /// <param name="context">The database context.</param>
     public TodoListDatabaseService(TodoListDbContext context)
     {
         this.context = context;
     }
 
-    /// <inheritdoc />
     public async Task<IEnumerable<TodoListModel>> GetAllAsync(string userId)
     {
         var entities = await this.context.TodoLists
@@ -33,28 +25,24 @@ public class TodoListDatabaseService : ITodoListDatabaseService
         return entities.Select(MapToModel);
     }
 
-    /// <inheritdoc />
     public async Task<TodoListModel?> GetByIdAsync(int id)
     {
         var entity = await this.context.TodoLists.FindAsync(id);
         return entity == null ? null : MapToModel(entity);
     }
 
-    /// <inheritdoc />
     public Task<TodoListModel> CreateAsync(TodoListModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.CreateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public Task UpdateAsync(TodoListModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.UpdateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
         var entity = await this.context.TodoLists.FindAsync(id)

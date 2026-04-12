@@ -14,7 +14,6 @@ namespace TodoListApp.WebApi.Data.Migrations
     [Migration("20260315015239_AddTags")]
     partial class AddTags
     {
-        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

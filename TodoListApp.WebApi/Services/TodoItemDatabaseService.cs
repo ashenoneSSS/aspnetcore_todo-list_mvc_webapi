@@ -6,23 +6,15 @@ using TodoListApp.WebApi.Models.Entities;
 
 namespace TodoListApp.WebApi.Services;
 
-/// <summary>
-/// Database service implementation for todo item operations.
-/// </summary>
 public class TodoItemDatabaseService : ITodoItemDatabaseService
 {
     private readonly TodoListDbContext context;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TodoItemDatabaseService"/> class.
-    /// </summary>
-    /// <param name="context">The database context.</param>
     public TodoItemDatabaseService(TodoListDbContext context)
     {
         this.context = context;
     }
 
-    /// <inheritdoc />
     public async Task<IEnumerable<TodoItemModel>> GetByListIdAsync(int listId, int page = 1, int pageSize = 10)
     {
         var skip = (page - 1) * pageSize;
@@ -37,7 +29,6 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         return entities.Select(MapToModel);
     }
 
-    /// <inheritdoc />
     public async Task<TodoItemModel?> GetByIdAsync(int id)
     {
         var entity = await this.context.TodoItems
@@ -45,7 +36,6 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         return entity == null ? null : MapToModel(entity);
     }
 
-    /// <inheritdoc />
     public async Task<IEnumerable<TodoItemModel>> GetAssignedToUserAsync(string userId)
     {
         var entities = await this.context.TodoItems
@@ -57,7 +47,18 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         return entities.Select(MapToModel);
     }
 
-    /// <inheritdoc />
+    public async Task<IEnumerable<TodoItemModel>> GetAllForUserAsync(string userId)
+    {
+        var entities = await this.context.TodoItems
+            .Include(i => i.TodoList)
+            .Where(i => i.TodoList.UserId == userId || i.AssigneeId == userId)
+            .OrderBy(i => i.DueDate)
+            .ThenBy(i => i.Title)
+            .ToListAsync();
+
+        return entities.Select(MapToModel);
+    }
+
     public async Task<IEnumerable<TodoItemModel>> SearchAsync(
         string userId,
         string? title,
@@ -111,21 +112,18 @@ public class TodoItemDatabaseService : ITodoItemDatabaseService
         return entities.Select(MapToModel);
     }
 
-    /// <inheritdoc />
     public Task<TodoItemModel> CreateAsync(TodoItemModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.CreateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public Task UpdateAsync(TodoItemModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.UpdateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public async Task DeleteAsync(int id)
     {
         var entity = await this.context.TodoItems.FindAsync(id)

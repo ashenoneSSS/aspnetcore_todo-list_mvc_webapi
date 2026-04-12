@@ -7,9 +7,6 @@ using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
 
-/// <summary>
-/// MVC controller for todo item operations.
-/// </summary>
 [Authorize]
 public class TodoItemController : Controller
 {
@@ -17,11 +14,6 @@ public class TodoItemController : Controller
     private readonly ITodoListWebApiService todoListService;
     private readonly UserManager<ApplicationUser> userManager;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TodoItemController"/> class.
-    /// </summary>
-    /// <param name="todoItemService">The todo item Web API service.</param>
-    /// <param name="todoListService">The todo list Web API service.</param>
     public TodoItemController(
         ITodoItemWebApiService todoItemService,
         ITodoListWebApiService todoListService,
@@ -32,10 +24,6 @@ public class TodoItemController : Controller
         this.userManager = userManager;
     }
 
-    /// <summary>
-    /// Displays tasks in a todo list.
-    /// </summary>
-    /// <param name="listId">The todo list identifier.</param>
     [HttpGet]
     public async Task<IActionResult> Index(int listId)
     {
@@ -56,9 +44,6 @@ public class TodoItemController : Controller
         return this.View(items.ToList());
     }
 
-    /// <summary>
-    /// Displays the create form.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Create(int listId)
     {
@@ -85,9 +70,6 @@ public class TodoItemController : Controller
         return this.View(model);
     }
 
-    /// <summary>
-    /// Handles create form submission.
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Create(TodoItemWebApiModel model)
@@ -96,9 +78,6 @@ public class TodoItemController : Controller
         return this.CreateCoreAsync(model);
     }
 
-    /// <summary>
-    /// Displays the edit form.
-    /// </summary>
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
@@ -126,9 +105,6 @@ public class TodoItemController : Controller
         return this.Forbid();
     }
 
-    /// <summary>
-    /// Handles edit form submission.
-    /// </summary>
     [HttpPost]
     [ValidateAntiForgeryToken]
     public Task<IActionResult> Edit(int id, TodoItemWebApiModel model)
@@ -137,21 +113,12 @@ public class TodoItemController : Controller
         return this.EditCoreAsync(id, model);
     }
 
-    /// <summary>
-    /// Displays task details.
-    /// </summary>
     [HttpGet]
     public Task<IActionResult> Details(int id) => this.ShowItemViewAsync(id, "Details");
 
-    /// <summary>
-    /// Displays the delete confirmation page.
-    /// </summary>
     [HttpGet]
     public Task<IActionResult> Delete(int id) => this.ShowItemViewAsync(id, "Delete");
 
-    /// <summary>
-    /// Handles delete confirmation.
-    /// </summary>
     [HttpPost]
     [ActionName("Delete")]
     [ValidateAntiForgeryToken]

@@ -7,11 +7,11 @@ using TodoListApp.WebApp.Services;
 namespace TodoListApp.WebApp.Controllers;
 
 [Authorize]
-public class AssignedTasksController : Controller
+public class TasksController : Controller
 {
     private readonly ITodoItemWebApiService todoItemService;
 
-    public AssignedTasksController(ITodoItemWebApiService todoItemService)
+    public TasksController(ITodoItemWebApiService todoItemService)
     {
         this.todoItemService = todoItemService;
     }
@@ -20,9 +20,7 @@ public class AssignedTasksController : Controller
     public async Task<IActionResult> Index(string? statusFilter, string? sortBy)
     {
         var userId = this.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var items = (await this.todoItemService.GetAssignedToUserAsync(userId))
-            .Where(i => !string.Equals(i.CreatorId, userId, StringComparison.Ordinal))
-            .ToList();
+        var items = (await this.todoItemService.GetAllForUserAsync(userId)).ToList();
 
         if (!string.IsNullOrWhiteSpace(statusFilter) && int.TryParse(statusFilter, out int status))
         {

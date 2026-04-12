@@ -6,9 +6,6 @@ using TodoListApp.WebApp.Models;
 
 namespace TodoListApp.WebApp.Services;
 
-/// <summary>
-/// Web API service implementation for to-do lists.
-/// </summary>
 public class TodoListWebApiService : ITodoListWebApiService
 {
     private static readonly JsonSerializerOptions JsonOptions = new ()
@@ -18,11 +15,6 @@ public class TodoListWebApiService : ITodoListWebApiService
 
     private readonly HttpClient httpClient;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TodoListWebApiService"/> class.
-    /// </summary>
-    /// <param name="httpClient">The HTTP client.</param>
-    /// <param name="configuration">The configuration.</param>
     public TodoListWebApiService(HttpClient httpClient, IConfiguration configuration)
     {
         ArgumentNullException.ThrowIfNull(configuration);
@@ -39,7 +31,6 @@ public class TodoListWebApiService : ITodoListWebApiService
         this.httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiKey);
     }
 
-    /// <inheritdoc />
     public async Task<IEnumerable<TodoListWebApiModel>> GetAllAsync(string userId)
     {
         var uri = new Uri(
@@ -51,7 +42,6 @@ public class TodoListWebApiService : ITodoListWebApiService
         return result ?? Enumerable.Empty<TodoListWebApiModel>();
     }
 
-    /// <inheritdoc />
     public async Task<TodoListWebApiModel?> GetByIdAsync(int id)
     {
         var uri = new Uri(this.httpClient.BaseAddress!, $"api/todolist/{id}");
@@ -65,21 +55,18 @@ public class TodoListWebApiService : ITodoListWebApiService
         return await response.Content.ReadFromJsonAsync<TodoListWebApiModel>(JsonOptions);
     }
 
-    /// <inheritdoc />
     public Task CreateAsync(TodoListWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.CreateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public Task UpdateAsync(TodoListWebApiModel model)
     {
         ArgumentNullException.ThrowIfNull(model);
         return this.UpdateCoreAsync(model);
     }
 
-    /// <inheritdoc />
     public Task DeleteAsync(int id)
     {
         return this.DeleteCoreAsync(id);
